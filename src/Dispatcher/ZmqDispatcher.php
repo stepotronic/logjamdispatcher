@@ -143,8 +143,9 @@ class ZmqDispatcher implements DispatcherInterface
 					// @todo log this into a file
 				}
 			}
+		} else {
+			$this->isConnected = false;
 		}
-		$this->isConnected = false;
 	}
 	
 	/**
