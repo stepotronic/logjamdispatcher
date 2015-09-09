@@ -9,9 +9,9 @@ use LogjamDispatcher\Message;
  */
 interface DispatcherInterface
 {
-	/**
-	 * Dispatches the logjam message to the implemented channel.
-	 * @param Message $message
-	 */
-	public function dispatch(Message $message);
+    /**
+     * Dispatches the logjam message to the implemented channel.
+     * @param Message $message
+     */
+    public function dispatch(Message $message);
 }
