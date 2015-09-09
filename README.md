@@ -1,3 +1,3 @@
 # Logjam Dispatcher
-Basic client to dispatch log messages to logjam using ZeroMQ
+Basic client to dispatch log messages to logjam using ZeroMQ.
 
