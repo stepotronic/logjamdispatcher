@@ -3,8 +3,8 @@
   "description": "Basic client to dispatch log messages to logjam using ZeroMQ.",
   "keywords": ["php", "logjam", "zeromq"],
   "autoload": {
-    "psr-0": {
-      "LogjamDispatcher": "src/"
+    "psr-4": {
+      "LogjamDispatcher\\": "src/"
     }
   },
   "require": {
