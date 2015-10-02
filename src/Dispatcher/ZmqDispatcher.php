@@ -105,7 +105,7 @@ class ZmqDispatcher implements DispatcherInterface
             'action'        => $message->getAction(),
             'started_at'    => date('c', $message->getRequestStartedTimestamp()), // ISO 8601
             'started_ms'    => $message->getRequestStartedTimestampInMilliseconds(),
-            'total_time'    => (float) number_format($message->getTotalTime(), 5),
+            'total_time'    => round($message->getTotalTime(), 5),
             'code'          => $message->getResponseCode(),
             'severity'      => $message->getSeverity(),
             'caller_id'     => $message->getCallerId(),
