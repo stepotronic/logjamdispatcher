@@ -102,6 +102,15 @@ class Message
      */
     protected $additionalData = array();
     
+    /**
+     * @var float
+     */
+    protected $dbTime = null;
+
+    /**
+     * @var int
+     */
+    protected $dbCalls = null;
     
     /**
      * @return string
@@ -444,4 +453,40 @@ class Message
         $this->additionalData = $additionalData;
         return $this;
     }
+
+    /**
+     * @param float $dbTime
+     * @return $this
+     */
+	public function setDbTime($dbTime)
+	{
+		$this->dbTime = $dbTime;
+		return $this;
+	}
+
+    /**
+     * @return float
+     */
+	public function getDbTime()
+	{
+		return $this->dbTime;
+	}
+
+    /**
+     * @param int $dbTime
+     * @return $this
+     */
+	public function setDbCalls($dbCalls)
+	{
+		$this->dbCalls = $dbCalls;
+		return $this;
+	}
+
+    /**
+     * @return int
+     */
+	public function getDbCalls()
+	{
+		return $this->dbCalls;
+	}
 }

@@ -125,6 +125,14 @@ class ZmqDispatcher implements DispatcherInterface
             'message'         => $message->getAdditionalData()
         );
         
+        if ($message->getDbCalls() !== null) {
+            $logArray['db_calls'] = $message->getDbCalls();
+        }
+
+        if ($message->getDbTime() !== null) {
+            $logArray['db_time'] = $message->getDbTime();
+        }
+
         return json_encode($logArray);
     }    
     
