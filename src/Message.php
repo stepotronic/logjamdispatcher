@@ -8,6 +8,11 @@ namespace LogjamDispatcher;
 class Message
 {
     /**
+     * @var int
+     */
+    const SEVERITY_UNKOWN = 5;
+
+    /**
      * @var string
      */
     protected $action = 0;
@@ -33,9 +38,9 @@ class Message
     protected $responseCode = '';
     
     /**
-     * @var string
+     * @var int
      */
-    protected $severity = '';
+    protected $severity = self::SEVERITY_UNKOWN;
     
     /**
      * @var string
@@ -102,6 +107,10 @@ class Message
      */
     protected $additionalData = array();
     
+    /**
+     * @var array
+     */
+    protected $lines = [];
     
     /**
      * @return string
@@ -194,7 +203,7 @@ class Message
     }
     
     /**
-     * @return string
+     * @return int
      */
     public function getSeverity()
     {
@@ -202,7 +211,7 @@ class Message
     }
     
     /**
-     * @param string $severity
+     * @param int $severity
      * @return $this
      */
     public function setSeverity($severity)
@@ -443,5 +452,34 @@ class Message
     {
         $this->additionalData = $additionalData;
         return $this;
+    }
+
+    /**
+     * Adds a log line
+     * @param int $severity
+     * @param string $timestamp
+     * @param string $info
+     * @return $this
+     */
+    public function addLine($severity, $timestamp, $info)
+    {
+        $this->lines[] = [$severity, $timestamp, $info];
+
+        if ($this->getSeverity() == self::SEVERITY_UNKOWN) {
+            $this->setSeverity($severity);
+        } else {
+            $this->setSeverity(max($severity, $this->getSeverity()));
+        }
+
+        return $this;
+    }
+
+    /**
+     * Returns the log lines
+     * @return array
+     */
+    public function getLines()
+    {
+        return $this->lines;
     }
 }
