@@ -125,6 +125,10 @@ class ZmqDispatcher implements DispatcherInterface
             'message'         => $message->getAdditionalData()
         );
         
+        if (count($message->getLines()) > 0) {
+            $logArray['lines'] = $message->getLines();
+        }
+
         return json_encode($logArray);
     }    
     
