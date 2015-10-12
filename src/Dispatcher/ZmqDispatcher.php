@@ -131,7 +131,7 @@ class ZmqDispatcher implements DispatcherInterface
 
         if ($message->getDbTime() !== null) {
             $logArray['db_time'] = $message->getDbTime();
-		}
+        }
 
         if (count($message->getLines()) > 0) {
             $logArray['lines'] = $message->getLines();

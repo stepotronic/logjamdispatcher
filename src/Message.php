@@ -468,37 +468,37 @@ class Message
      * @param float $dbTime
      * @return $this
      */
-	public function setDbTime($dbTime)
-	{
-		$this->dbTime = $dbTime;
-		return $this;
-	}
+    public function setDbTime($dbTime)
+    {
+        $this->dbTime = $dbTime;
+        return $this;
+    }
 
     /**
      * @return float
      */
-	public function getDbTime()
-	{
-		return $this->dbTime;
-	}
+    public function getDbTime()
+    {
+        return $this->dbTime;
+    }
 
     /**
      * @param int $dbTime
      * @return $this
      */
-	public function setDbCalls($dbCalls)
-	{
-		$this->dbCalls = $dbCalls;
-		return $this;
-	}
+    public function setDbCalls($dbCalls)
+    {
+        $this->dbCalls = $dbCalls;
+        return $this;
+    }
 
     /**
      * @return int
      */
-	public function getDbCalls()
-	{
-		return $this->dbCalls;
-	}
+    public function getDbCalls()
+    {
+        return $this->dbCalls;
+    }
 
     /**
      * Adds a log line
