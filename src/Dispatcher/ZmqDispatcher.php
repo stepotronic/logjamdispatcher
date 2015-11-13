@@ -113,7 +113,6 @@ class ZmqDispatcher implements DispatcherInterface
             'user_id'       => $message->getUserId(),
             'host'          => $message->getHost(),
             'ip'            => $message->getIp(),
-            'request_id'    => uniqid('', true),
             'request_info'   => array(
                 'query_parameters' => $this->filterPrivateFields($message->getQueryParameters()),
                 'headers'          => $message->getHeaders(),
@@ -124,6 +123,16 @@ class ZmqDispatcher implements DispatcherInterface
             'exceptions'     => $message->getExceptions(),
             'message'         => $message->getAdditionalData()
         );
+
+        if ($message->getRequestId() == null) {
+            $requestId = $message->getRequestId();
+        } else {
+            // logjam expects a 32 character string,
+            // also to avoid time-based conflicts on multi server setups we add the hostname
+            $requestId = md5(uniqid(gethostname(), true));
+        }
+        $logArray['request_id'] = $requestId;
+
         
         if ($message->getDbCalls() !== null) {
             $logArray['db_calls'] = $message->getDbCalls();
