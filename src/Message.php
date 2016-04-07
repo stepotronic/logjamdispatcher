@@ -10,6 +10,31 @@ class Message
     /**
      * @var int
      */
+    const SEVERITY_DEBUG = 0;
+
+    /**
+     * @var int
+     */
+    const SEVERITY_INFO = 1;
+
+    /**
+     * @var int
+     */
+    const SEVERITY_WARN = 2;
+
+    /**
+     * @var int
+     */
+    const SEVERITY_ERROR = 3;
+
+    /**
+     * @var int
+     */
+    const SEVERITY_FATAL = 4;
+    
+    /**
+     * @var int
+     */
     const SEVERITY_UNKOWN = 5;
 
     /**
