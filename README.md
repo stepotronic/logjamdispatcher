@@ -86,3 +86,12 @@ $message
     ->setTotalTime(time() - $myStartTime)
     ->setUserId(0);
 ````
+
+### Log Exceptions
+
+````php
+if ($dispatcher->hasExceptions) {
+    $exceptions = $dispatcher->getExceptions();
+    // Do stuff with them
+}
+````
