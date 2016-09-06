@@ -1,42 +1,15 @@
 <?php
 
-namespace LogjamDispatcher;
+namespace LogjamDispatcher\Logjam;
+
+use LogjamDispatcher\Dispatcher\Expression;
+use LogjamDispatcher\Http\RequestInformationInterface;
 
 /**
  * Message for required data for logjam.
  */
-class Message
+class Message implements MessageInterface
 {
-    /**
-     * @var int
-     */
-    const SEVERITY_DEBUG = 0;
-
-    /**
-     * @var int
-     */
-    const SEVERITY_INFO = 1;
-
-    /**
-     * @var int
-     */
-    const SEVERITY_WARN = 2;
-
-    /**
-     * @var int
-     */
-    const SEVERITY_ERROR = 3;
-
-    /**
-     * @var int
-     */
-    const SEVERITY_FATAL = 4;
-    
-    /**
-     * @var int
-     */
-    const SEVERITY_UNKOWN = 5;
-
     /**
      * @var string
      */
@@ -58,14 +31,14 @@ class Message
     protected $totalTime = 0.0;
     
     /**
-     * @var string
+     * @var int
      */
-    protected $responseCode = '';
+    protected $responseCode = 0;
     
     /**
      * @var int
      */
-    protected $severity = self::SEVERITY_UNKOWN;
+    protected $severity = Expression\Severity::UNKOWN;
     
     /**
      * @var string
@@ -93,34 +66,14 @@ class Message
     protected $ip = '';
     
     /**
-     * @var string
+     * @var RequestIdInterface
      */
-    protected $requestId = '';
-    
-    /**
-     * @var array
-     */
-    protected $queryParameters = array();
-    
-    /**
-     * @var array
-     */
-    protected $headers = array();
+    protected $requestId;
     
     /**
      * @var array
      */
     protected $url = array();
-    
-    /**
-     * @var string
-     */
-    protected $method = '';
-    
-    /**
-     * @var
-     */
-    protected $bodyParameters;
     
     /**
      * @var array
@@ -135,17 +88,22 @@ class Message
     /**
      * @var float
      */
-    protected $dbTime = null;
+    protected $dbTime;
 
     /**
      * @var int
      */
-    protected $dbCalls = null;
+    protected $dbCalls;
 
     /**
-     * @var array
+     * @var LineInterface[]
      */
     protected $lines = [];
+
+    /**
+     * @var RequestInformationInterface
+     */
+    protected $requestInformation;
     
     /**
      * @return string
@@ -220,7 +178,7 @@ class Message
     }
     
     /**
-     * @return string
+     * @return int
      */
     public function getResponseCode()
     {
@@ -346,7 +304,7 @@ class Message
     }
     
     /**
-     * @return string
+     * @return RequestIdInterface
      */
     public function getRequestId()
     {
@@ -354,51 +312,15 @@ class Message
     }
     
     /**
-     * @param string $requestId
+     * @param RequestIdInterface $requestId
      * @return $this
      */
-    public function setRequestId($requestId)
+    public function setRequestId(RequestIdInterface $requestId)
     {
         $this->requestId = $requestId;
         return $this;
     }
-    
-    /**
-     * @return array
-     */
-    public function getQueryParameters()
-    {
-        return $this->queryParameters;
-    }
-    
-    /**
-     * @param array $queryParameters
-     * @return $this
-     */
-    public function setQueryParameters($queryParameters)
-    {
-        $this->queryParameters = $queryParameters;
-        return $this;
-    }
-    
-    /**
-     * @return array
-     */
-    public function getHeaders()
-    {
-        return $this->headers;
-    }
-    
-    /**
-     * @param array $headers
-     * @return $this
-     */
-    public function setHeaders($headers)
-    {
-        $this->headers = $headers;
-        return $this;
-    }
-    
+
     /**
      * @return array
      */
@@ -416,45 +338,9 @@ class Message
         $this->url = $url;
         return $this;
     }
-    
+
     /**
-     * @return string
-     */
-    public function getMethod()
-    {
-        return $this->method;
-    }
-    
-    /**
-     * @param string $method
-     * @return $this
-     */
-    public function setMethod($method)
-    {
-        $this->method = $method;
-        return $this;
-    }
-    
-    /**
-     * @return mixed
-     */
-    public function getBodyParameters()
-    {
-        return $this->bodyParameters;
-    }
-    
-    /**
-     * @param mixed $bodyParameters
-     * @return $this
-     */
-    public function setBodyParameters($bodyParameters)
-    {
-        $this->bodyParameters = $bodyParameters;
-        return $this;
-    }
-    
-    /**
-     * @return array
+     * @return \Exception[]
      */
     public function getExceptions()
     {
@@ -462,7 +348,7 @@ class Message
     }
     
     /**
-     * @param array $exceptions
+     * @param  \Exception[] $exceptions
      * @return $this
      */
     public function setExceptions($exceptions)
@@ -508,7 +394,7 @@ class Message
     }
 
     /**
-     * @param int $dbTime
+     * @param  int $dbCalls
      * @return $this
      */
     public function setDbCalls($dbCalls)
@@ -527,30 +413,105 @@ class Message
 
     /**
      * Adds a log line
-     * @param int $severity
-     * @param string $timestamp
-     * @param string $info
+     * @param LineInterface $line
      * @return $this
      */
-    public function addLine($severity, $timestamp, $info)
+    public function addLine(LineInterface $line)
     {
-        $this->lines[] = [$severity, $timestamp, $info];
-
-        if ($this->getSeverity() == self::SEVERITY_UNKOWN) {
-            $this->setSeverity($severity);
-        } else {
-            $this->setSeverity(max($severity, $this->getSeverity()));
-        }
-
+        $this->lines[] = $line;
+        
         return $this;
     }
 
     /**
      * Returns the log lines
-     * @return array
+     * @return LineInterface[]
      */
     public function getLines()
     {
         return $this->lines;
     }
+
+    /**
+     * @return bool
+     */
+    public function hasLines()
+    {
+        return count($this->lines) > 0;
+    }
+
+    /**
+     * @param $requestInformation
+     * @return $this
+     */
+    public function setRequestInformation($requestInformation)
+    {
+        $this->requestInformation = $requestInformation;
+        
+        return $this;
+    }
+    
+    
+    /**
+     * @return RequestInformationInterface
+     */
+    public function getHttpRequestInformation()
+    {
+        return $this->requestInformation;
+    }
+
+    /**
+     * Specify data which should be serialized to JSON
+     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     * @since 5.4.0
+     */
+    function jsonSerialize()
+    {
+        $logArray =  array(
+            // required
+            'action'        => $this->getAction(),
+            'started_at'    => date('c', $this->getRequestStartedTimestamp()), // ISO 8601
+            'started_ms'    => $this->getRequestStartedTimestampInMilliseconds(),
+            'total_time'    => round($this->getTotalTime(), 5),
+            'code'          => $this->getResponseCode(),
+            'severity'      => $this->getSeverity(),
+            'caller_id'     => $this->getCallerId(),
+            'caller_action' => $this->getCallerAction(),
+            'user_id'       => $this->getUserId(),
+            'host'          => $this->getHost(),
+            'ip'            => $this->getIp(),
+            'request_info'   => array(
+                'query_parameters' => $this->getHttpRequestInformation()->getQueryParameters(),
+                'headers'          => $this->getHttpRequestInformation()->getHeaders(),
+                'url'               => $this->getHttpRequestInformation()->getUrl(),
+                'method'           => $this->getHttpRequestInformation()->getMethod(),
+                'body_parameters'  => $this->getHttpRequestInformation()->getBodyParameters(),
+            ),
+            'exceptions'     => $this->getExceptions(),
+            'message'        => $this->getAdditionalData(),
+            'request_id'     => $this->getRequestId()->getId(),
+        );
+
+
+        // Optional parameters
+        if ($this->getDbCalls() !== null) {
+            $logArray['db_calls'] = $this->getDbCalls();
+        }
+
+        if ($this->getDbTime() !== null) {
+            $logArray['db_time'] = $this->getDbTime();
+        }
+
+        if ($this->hasLines()) {
+            $logArray['lines'] = array();
+            foreach ($this->getLines() as $line) {
+                $logArray['lines'][] = array($line->getSeverity(), $line->getMicroTimestamp(), $line->getMessage());
+            }
+        }
+        
+        return $logArray;
+    }
 }
+
