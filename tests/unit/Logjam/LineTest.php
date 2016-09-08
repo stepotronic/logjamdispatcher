@@ -9,6 +9,9 @@ use LogjamDispatcher\Dispatcher\Expression;
  */
 class LineTest extends AbstractLineTest
 {
+    /**
+     * @return Line
+     */
     protected function getLineInstance()
     {
         return new Line(Expression\Severity::DEBUG, 'foobar', $this->microtime);

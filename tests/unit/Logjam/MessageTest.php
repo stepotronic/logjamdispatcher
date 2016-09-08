@@ -12,6 +12,9 @@ use LogjamDispatcher\Dispatcher\Expression;
  */
 class MessageTest extends AbstractMessageTest
 {
+    /**
+     * @return Message
+     */
     protected function getMessageInstance()
     {
         $message = new Message();
@@ -19,6 +22,9 @@ class MessageTest extends AbstractMessageTest
         return $message;
     }
 
+    /**
+     * Test the Action getter/setter
+     */
     public function testAction()
     {
         $testAction = 'GET';
@@ -29,6 +35,9 @@ class MessageTest extends AbstractMessageTest
         $this->assertSame($testAction, $this->instance->getAction());
     }
 
+    /**
+     * Tests RequestStartedAt getter/setter
+     */
     public function testRequestStartedAt()
     {
         $testTimestamp = new DateTime("now", new DateTimeZone("Europe/Berlin"));
@@ -39,6 +48,9 @@ class MessageTest extends AbstractMessageTest
         $this->assertSame($testTimestamp, $this->instance->getRequestStartedAt());
     }
 
+    /**
+     * Tests RequestEndedAt getter/setter
+     */
     public function testRequestEndedAt()
     {
         $testTimestamp = new DateTime("now", new DateTimeZone("Europe/Berlin"));
@@ -49,6 +61,9 @@ class MessageTest extends AbstractMessageTest
         $this->assertSame($testTimestamp, $this->instance->getRequestEndedAt());
     }
 
+    /**
+     * Tests ResponseCode getter/setter
+     */
     public function testResponseCode()
     {
         $testResponseCode = 404;
@@ -59,6 +74,9 @@ class MessageTest extends AbstractMessageTest
         $this->assertSame($testResponseCode, $this->instance->getResponseCode());
     }
 
+    /**
+     * Tests Severity getter/setter
+     */
     public function testSeverity()
     {
         $testSeverity = LogjamDispatcher\Dispatcher\Expression\Severity::DEBUG;
@@ -69,6 +87,9 @@ class MessageTest extends AbstractMessageTest
         $this->assertSame($testSeverity, $this->instance->getSeverity());
     }
 
+    /**
+     * Tests CallerId getter/setter
+     */
     public function testCallerId()
     {
         $testCallerId = 'foobar123';
@@ -79,6 +100,9 @@ class MessageTest extends AbstractMessageTest
         $this->assertSame($testCallerId, $this->instance->getCallerId());
     }
 
+    /**
+     * Tests CallerAction getter/setter
+     */
     public function testCallerAction()
     {
         $testCallerAction = 'foobar123';
@@ -89,6 +113,9 @@ class MessageTest extends AbstractMessageTest
         $this->assertSame($testCallerAction, $this->instance->getCallerAction());
     }
 
+    /**
+     * Tests UserId getter/setter
+     */
     public function testUserId()
     {
         $testUserId = 700349;
@@ -99,6 +126,9 @@ class MessageTest extends AbstractMessageTest
         $this->assertSame($testUserId, $this->instance->getUserId());
     }
 
+    /**
+     * Tests Host getter/setter
+     */
     public function testHost()
     {
         $testHost = 'foo.bar';
@@ -109,6 +139,9 @@ class MessageTest extends AbstractMessageTest
         $this->assertSame($testHost, $this->instance->getHost());
     }
 
+    /**
+     * Tests Ip getter/setter
+     */
     public function testIp()
     {
         $testIp = '127.0.0.1';
@@ -119,6 +152,9 @@ class MessageTest extends AbstractMessageTest
         $this->assertSame($testIp, $this->instance->getIp());
     }
 
+    /**
+     * Tests RequestId getter/setter
+     */
     public function testRequestId()
     {
         $testRequestId = new RequestId();
@@ -129,6 +165,9 @@ class MessageTest extends AbstractMessageTest
         $this->assertSame($testRequestId, $this->instance->getRequestId());
     }
 
+    /**
+     * Tests Url getter/setter
+     */
     public function testUrl()
     {
         $testUrl = array('my/url/is/foo/bar');
@@ -140,6 +179,9 @@ class MessageTest extends AbstractMessageTest
 
     }
 
+    /**
+     * Tests Exceptions getter/setter
+     */
     public function testExceptions()
     {
         $testExceptions = array(new \Exception());
@@ -160,6 +202,9 @@ class MessageTest extends AbstractMessageTest
         $this->assertSame($testAdditionalData, $this->instance->getAdditionalData());
     }
 
+    /**
+     * Tests DbTime getter/setter
+     */
     public function testDbTime()
     {
         $testDbTime = 200.12;
@@ -170,6 +215,9 @@ class MessageTest extends AbstractMessageTest
         $this->assertSame($testDbTime, $this->instance->getDbTime());
     }
 
+    /**
+     * Tests DbCalls getter/setter
+     */
     public function testDbCalls()
     {
         $testDbCalls = 700349;
@@ -180,6 +228,9 @@ class MessageTest extends AbstractMessageTest
         $this->assertSame($testDbCalls, $this->instance->getDbCalls());
     }
 
+    /**
+     * Tests Lines getter/setter/add
+     */
     public function testLines()
     {
         $testLines = array(new Line());
@@ -194,7 +245,9 @@ class MessageTest extends AbstractMessageTest
         $this->assertInternalType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $this->instance->getLines());
         $this->assertSame($testLines, $this->instance->getLines());
     }
-
+    /**
+     * Tests HttpRequestInformation getter/setter
+     */
     public function testHttpRequestInformation()
     {
         $testRequestInformation = new RequestInformation();
@@ -205,6 +258,9 @@ class MessageTest extends AbstractMessageTest
         $this->assertSame($testRequestInformation, $this->instance->getHttpRequestInformation());
     }
 
+    /**
+     * test if the object is serializeable
+     */
     public function testObjectIsJsonSerializable()
     {
         $this->instance->setRequestInformation(new RequestInformation());

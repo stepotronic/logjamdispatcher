@@ -64,6 +64,7 @@ class ZmqDispatcher implements DispatcherInterface
     /**
      * Dispatches the message
      * @param MessageInterface $message
+     * 
      * @return boolean
      */
     public function dispatch(MessageInterface $message)

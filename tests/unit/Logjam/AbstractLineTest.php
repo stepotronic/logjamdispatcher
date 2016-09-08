@@ -1,9 +1,11 @@
 <?php
 
+use LogjamDispatcher\Logjam\LineInterface;
+
 abstract class AbstractLineTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var \LogjamDispatcher\Logjam\LineInterface
+     * @var LineInterface
      */
     protected $instance;
 
@@ -11,9 +13,15 @@ abstract class AbstractLineTest extends \PHPUnit_Framework_TestCase
      * @var \DateTime
      */
     protected $microtime;
-    
+
+    /**
+     * @return LineInterface
+     */
     protected abstract function getLineInstance();
-    
+
+    /**
+     * Create an instance of LineInterface and prepare a dummy DateTime
+     */
     public function setUp()
     {
         $this->microtime = new DateTime("now", new DateTimeZone("Europe/Berlin"));

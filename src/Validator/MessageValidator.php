@@ -44,6 +44,7 @@ class MessageValidator
 
     /**
      * @param  string $action
+     * 
      * @throws ValidationException
      */
     public static function validateAction($action)
@@ -59,6 +60,7 @@ class MessageValidator
 
     /**
      * @param  int $requestStartedTimestamp
+     * 
      * @throws ValidationException
      */
     public static function validateRequestStartedTimestamp($requestStartedTimestamp)
@@ -70,6 +72,7 @@ class MessageValidator
 
     /**
      * @param  float $totalTime
+     * 
      * @throws ValidationException
      */
     public static function validateTotalTime($totalTime)
@@ -81,6 +84,7 @@ class MessageValidator
 
     /**
      * @param  int $responseCode
+     * 
      * @throws ValidationException
      */
     public static function validateResponseCode($responseCode)
@@ -96,6 +100,7 @@ class MessageValidator
 
     /**
      * @param  int $severity
+     * 
      * @throws ValidationException
      */
     public static function validateSeverity($severity)
@@ -111,6 +116,7 @@ class MessageValidator
 
     /**
      * @param  string $callerId
+     * 
      * @throws ValidationException
      */
     public static function validateCallerId($callerId)
@@ -122,6 +128,7 @@ class MessageValidator
 
     /**
      * @param  string $callerAction
+     * 
      * @throws ValidationException
      */
     public static function validateCallerAction($callerAction)
@@ -133,6 +140,7 @@ class MessageValidator
 
     /**
      * @param  string $userId
+     * 
      * @throws ValidationException
      */
     public static function validateUserId($userId)
@@ -144,6 +152,7 @@ class MessageValidator
 
     /**
      * @param  string $host
+     * 
      * @throws ValidationException
      */
     public static function validateHost($host)
@@ -155,6 +164,7 @@ class MessageValidator
 
     /**
      * @param  string $ip
+     * 
      * @throws ValidationException
      */
     public static function validateIp($ip)
@@ -166,6 +176,7 @@ class MessageValidator
 
     /**
      * @param  \Exception[] $exceptions
+     * 
      * @throws ValidationException
      */
     public static function validateExceptions(array $exceptions)
@@ -179,6 +190,7 @@ class MessageValidator
 
     /**
      * @param $additionalData
+     * 
      * @throws ValidationException
      */
     public static function validateAdditionalData($additionalData)
@@ -193,6 +205,7 @@ class MessageValidator
     /**
      * Validates db calls. Can also be null as it is not required
      * @param  int|null $dbCalls
+     * 
      * @throws ValidationException
      */
     public static function validateDbCalls($dbCalls)
@@ -205,6 +218,7 @@ class MessageValidator
     /**
      * Validates db time. Can also be null as it is not required
      * @param float|null $dbTime
+     * 
      * @throws ValidationException
      */
     public static function validateDbTime($dbTime)
@@ -216,6 +230,7 @@ class MessageValidator
 
     /**
      * @param array $lines
+     * 
      * @throws ValidationException
      */
     public static function validateLines(array $lines)
@@ -229,6 +244,7 @@ class MessageValidator
 
     /**
      * @param  RequestIdInterface $requestId
+     * 
      * @throws ValidationException
      */
     public static function validateRequestId($requestId)
@@ -240,6 +256,7 @@ class MessageValidator
 
     /**
      * @param  RequestInformationInterface $httpRequestInformation
+     * 
      * @throws ValidationException
      */
     public static function validateHttpRequestInformation($httpRequestInformation)

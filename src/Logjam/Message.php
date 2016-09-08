@@ -111,6 +111,7 @@ class Message implements MessageInterface
     
     /**
      * @param string $action
+     * 
      * @return $this
      */
     public function setAction($action)
@@ -129,6 +130,7 @@ class Message implements MessageInterface
     
     /**
      * @param \DateTime $requestStartedAt
+     * 
      * @return $this
      */
     public function setRequestStartedAt(\DateTime $requestStartedAt)
@@ -148,6 +150,7 @@ class Message implements MessageInterface
     
     /**
      * @param \DateTime $requestEndedAt
+     * 
      * @return $this
      */
     public function setRequestEndedAt(\DateTime $requestEndedAt)
@@ -174,6 +177,7 @@ class Message implements MessageInterface
     
     /**
      * @param string $responseCode
+     * 
      * @return $this
      */
     public function setResponseCode($responseCode)
@@ -192,6 +196,7 @@ class Message implements MessageInterface
     
     /**
      * @param int $severity
+     * 
      * @return $this
      */
     public function setSeverity($severity)
@@ -210,6 +215,7 @@ class Message implements MessageInterface
     
     /**
      * @param string $callerId
+     * 
      * @return $this
      */
     public function setCallerId($callerId)
@@ -228,6 +234,7 @@ class Message implements MessageInterface
     
     /**
      * @param string $callerAction
+     * 
      * @return $this
      */
     public function setCallerAction($callerAction)
@@ -246,6 +253,7 @@ class Message implements MessageInterface
     
     /**
      * @param int $userId
+     * 
      * @return $this
      */
     public function setUserId($userId)
@@ -264,6 +272,7 @@ class Message implements MessageInterface
     
     /**
      * @param string $host
+     * 
      * @return $this
      */
     public function setHost($host)
@@ -282,6 +291,7 @@ class Message implements MessageInterface
     
     /**
      * @param string $ip
+     * 
      * @return $this
      */
     public function setIp($ip)
@@ -300,6 +310,7 @@ class Message implements MessageInterface
     
     /**
      * @param RequestIdInterface $requestId
+     * 
      * @return $this
      */
     public function setRequestId(RequestIdInterface $requestId)
@@ -318,6 +329,7 @@ class Message implements MessageInterface
     
     /**
      * @param array $url
+     * 
      * @return $this
      */
     public function setUrl($url)
@@ -336,6 +348,7 @@ class Message implements MessageInterface
     
     /**
      * @param  \Exception[] $exceptions
+     * 
      * @return $this
      */
     public function setExceptions($exceptions)
@@ -354,6 +367,7 @@ class Message implements MessageInterface
     
     /**
      * @param array $additionalData
+     * 
      * @return $this
      */
     public function setAdditionalData($additionalData)
@@ -364,6 +378,7 @@ class Message implements MessageInterface
 
     /**
      * @param float $dbTime
+     * 
      * @return $this
      */
     public function setDbTime($dbTime)
@@ -382,6 +397,7 @@ class Message implements MessageInterface
 
     /**
      * @param  int $dbCalls
+     * 
      * @return $this
      */
     public function setDbCalls($dbCalls)
@@ -401,6 +417,7 @@ class Message implements MessageInterface
     /**
      * Adds a log line
      * @param LineInterface $line
+     * 
      * @return $this
      */
     public function addLine(LineInterface $line)
@@ -412,6 +429,7 @@ class Message implements MessageInterface
 
     /**
      * Returns the log lines
+     * 
      * @return LineInterface[]
      */
     public function getLines()
@@ -429,6 +447,7 @@ class Message implements MessageInterface
 
     /**
      * @param $requestInformation
+     * 
      * @return $this
      */
     public function setRequestInformation($requestInformation)
@@ -502,4 +521,3 @@ class Message implements MessageInterface
         return $logArray;
     }
 }
-

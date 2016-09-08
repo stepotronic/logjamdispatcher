@@ -26,7 +26,7 @@ class Line implements LineInterface
      * Line constructor.
      * @param int $severity
      * @param string $message
-     * @param \DateTime $microTimestamp
+     * @param \DateTime $microTime
      */
     public function __construct($severity = Expression\Severity::UNKOWN, $message = '', \DateTime $microTime = null)
     {

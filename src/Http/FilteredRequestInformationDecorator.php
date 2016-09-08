@@ -35,6 +35,7 @@ class FilteredRequestInformationDecorator implements RequestInformationInterface
 
     /**
      * HTTP Method
+     * 
      * @return string
      */
     public function getMethod()
@@ -44,6 +45,7 @@ class FilteredRequestInformationDecorator implements RequestInformationInterface
 
     /**
      * Request URL
+     * 
      * @return string
      */
     public function getUrl()
@@ -53,6 +55,7 @@ class FilteredRequestInformationDecorator implements RequestInformationInterface
 
     /**
      * Header Parameters
+     * 
      * @return array
      */
     public function getHeaders()
@@ -62,6 +65,7 @@ class FilteredRequestInformationDecorator implements RequestInformationInterface
 
     /**
      * Query Parameters (GET Parameters)
+     * 
      * @return array
      */
     public function getQueryParameters()
@@ -71,6 +75,7 @@ class FilteredRequestInformationDecorator implements RequestInformationInterface
 
     /**
      * BodyParameters
+     * 
      * @return array
      */
     public function getBodyParameters()
@@ -80,6 +85,7 @@ class FilteredRequestInformationDecorator implements RequestInformationInterface
 
     /**
      * @param  $array
+     * 
      * @return $array
      */
     protected function filter($array)

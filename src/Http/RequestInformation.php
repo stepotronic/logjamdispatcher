@@ -39,6 +39,7 @@ class RequestInformation implements RequestInformationInterface
 
     /**
      * @param  string $method
+     * 
      * @return $this
      */
     public function setMethod($method)
@@ -58,6 +59,7 @@ class RequestInformation implements RequestInformationInterface
 
     /**
      * @param  string $url
+     * 
      * @return $this
      */
     public function setUrl($url)
@@ -77,6 +79,7 @@ class RequestInformation implements RequestInformationInterface
 
     /**
      * @param  array $headers
+     * 
      * @return $this
      */
     public function setHeaders(array $headers)
@@ -105,6 +108,7 @@ class RequestInformation implements RequestInformationInterface
 
     /**
      * @param  array $queryParameters
+     * 
      * @return $this
      */
     public function setQueryParameters(array $queryParameters)
@@ -133,6 +137,7 @@ class RequestInformation implements RequestInformationInterface
 
     /**
      * @param  array $bodyParameters
+     * 
      * @return $this
      */
     public function setBodyParameters(array $bodyParameters)

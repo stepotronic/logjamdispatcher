@@ -8,11 +8,17 @@ use LogjamDispatcher\Http\RequestInformation;
  */
 class RequestInformationTest extends AbstractRequestInformationTest
 {
+    /**
+     * @return RequestInformation
+     */
     protected function getRequestInformationInstance()
     {
         return new RequestInformation();
     }
-    
+
+    /**
+     * Test method getter/setter
+     */
     public function testMethod()
     {
         $testMethod = "POST";
@@ -23,6 +29,9 @@ class RequestInformationTest extends AbstractRequestInformationTest
         $this->assertSame($testMethod, $this->instance->getMethod());
     }
 
+    /**
+     * Test getter/setter for Url
+     */
     public function testUrl()
     {
         $testUrl = "https://foo.bar/foobar";

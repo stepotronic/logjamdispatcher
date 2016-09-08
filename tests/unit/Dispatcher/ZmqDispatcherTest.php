@@ -132,12 +132,21 @@ class ZmqDispatcherTest extends \PHPUnit_Framework_TestCase
      */
     protected function getDispatcherInstance()
     {
+        /**
+         * @var $zmqSocketMock ZMQSocket
+         */
         $zmqSocketMock = $this->getZMQSocketMock();
+        
         $dispatcher = new ZmqDispatcher($zmqSocketMock, array('tcp://willneverconnect'), 'testapp', 'testenv');
 
         return [$dispatcher, $zmqSocketMock];
     }
-    
+
+    /**
+     * Prepares a mock for ZMQSocket with connect and sendmulti methods
+     * 
+     * @return PHPUnit_Framework_MockObject_MockObject
+     */
     protected function getZMQSocketMock()
     {
         $ZMQSocketMock = $this->getMock('ZMQSocket', array(

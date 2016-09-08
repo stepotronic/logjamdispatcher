@@ -16,6 +16,7 @@ class RequestId implements RequestIdInterface
 
     /**
      * Proxy getter to enable generated ids
+     * 
      * @return string
      */
     public function getId() 

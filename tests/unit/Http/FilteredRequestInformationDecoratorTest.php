@@ -17,7 +17,10 @@ class FilteredRequestInformationDecoratorTest extends AbstractRequestInformation
      * @var FilteredRequestInformationDecorator
      */
     protected $decorator;
-    
+
+    /**
+     * prepare an Message instance and a decorator
+     */
     public function setUp()
     {
         parent::setUp();
@@ -25,11 +28,17 @@ class FilteredRequestInformationDecoratorTest extends AbstractRequestInformation
         $this->decorator = new FilteredRequestInformationDecorator($this->instance, array(self::TEST_FILTER_FIELD), self::TEST_FILTER_MASK);
     }
 
+    /**
+     * @return RequestInformation
+     */
     protected function getRequestInformationInstance()
     {
         return new RequestInformation();
     }
 
+    /**
+     * test getter/setter for method
+     */
     public function testMethod()
     {
         $testMethod = "POST";
@@ -40,6 +49,9 @@ class FilteredRequestInformationDecoratorTest extends AbstractRequestInformation
         $this->assertSame($testMethod, $this->decorator->getMethod());
     }
 
+    /**
+     * test url getter/setter
+     */
     public function testUrl()
     {
         $testUrl = "https://foo.bar/foobar";
@@ -51,6 +63,8 @@ class FilteredRequestInformationDecoratorTest extends AbstractRequestInformation
     }
 
     /**
+     * test header set/get/add methods
+     * 
      * @dataProvider parameterProvider
      */
     public function testHeaders($headers)
@@ -68,6 +82,8 @@ class FilteredRequestInformationDecoratorTest extends AbstractRequestInformation
     }
 
     /**
+     * test queryParameters add/get/set methods
+     * 
      * @dataProvider parameterProvider
      */
     public function testQueryParameters($queryParameter)
@@ -85,6 +101,8 @@ class FilteredRequestInformationDecoratorTest extends AbstractRequestInformation
     }
 
     /**
+     * test bodyParameters add/get/set methods
+     * 
      * @dataProvider parameterProvider
      */
     public function testBodyParameters($bodyParameter)
@@ -103,6 +121,8 @@ class FilteredRequestInformationDecoratorTest extends AbstractRequestInformation
 
 
     /**
+     * test filter for body parameters
+     * 
      * @dataProvider credentialParameterProvider
      */
     public function testBodyParametersFilter($bodyParameter)
@@ -116,6 +136,8 @@ class FilteredRequestInformationDecoratorTest extends AbstractRequestInformation
     }
 
     /**
+     * test filter for query parameters
+     * 
      * @dataProvider credentialParameterProvider
      */
     public function testQueryParametersFilter($queryParameter)
@@ -129,6 +151,8 @@ class FilteredRequestInformationDecoratorTest extends AbstractRequestInformation
     }
 
     /**
+     * test filter for headers
+     * 
      * @dataProvider credentialParameterProvider
      */
     public function testHeadersFilter($headers)

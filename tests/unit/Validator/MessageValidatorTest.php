@@ -16,7 +16,10 @@ class MessageValidatorTest extends \PHPUnit_Framework_TestCase
      * @var Message
      */
     protected $message;
-    
+
+    /**
+     * Sets the test up. Prepares a valid fake message
+     */
     protected function setUp()
     {
         $this->message = new Message();
@@ -62,7 +65,12 @@ class MessageValidatorTest extends \PHPUnit_Framework_TestCase
             $this->fail('Validation throws Error on a valid message.');
         }
     }
-    
+
+    /**
+     * Test if the validation only takes valid strings
+     * 
+     * @throws ValidationException
+     */
     public function testValidateActionOnlyAcceptRegex()
     {
         $this->setExpectedException(ValidationException::class);
