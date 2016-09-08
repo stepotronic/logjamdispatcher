@@ -29,20 +29,20 @@ class MessageValidatorTest extends \PHPUnit_Framework_TestCase
         $requestInformation = new RequestInformation();
         $requestInformation
             ->setMethod('GET')
-            ->setHeaders(array('Accept' => 'Nothing', 'Feels' => 'BadMan'))
-            ->setBodyParameters(array('action' => 'submit'))
-            ->setQueryParameters(array('page' => '15', 'offset' => '213123'))
+            ->setHeaders(['Accept' => 'Nothing', 'Feels' => 'BadMan'])
+            ->setBodyParameters(['action' => 'submit'])
+            ->setQueryParameters(['page' => '15', 'offset' => '213123'])
             ->setUrl('my.app.page/products');
 
 
         $this->message
             ->setAction('MyApp::MyController#MyAction')
-            ->setAdditionalData(array('stuff' => 'theUserDid'))
+            ->setAdditionalData(['stuff' => 'theUserDid'])
             ->setCallerAction('') //value of http request header X-Logjam-Action (if present)
             ->setCallerId('')     //value of http request header X-Logjam-Caller-Id (if present)
             ->setDbCalls(12)
             ->setDbTime(123123.123)
-            ->setExceptions(array(new \Exception("Test Exception")))
+            ->setExceptions([new \Exception("Test Exception")])
             ->setHost('my.app.host')
             ->setIp('123.321.123.321')
             ->setRequestId(new RequestId())
@@ -354,11 +354,11 @@ class MessageValidatorTest extends \PHPUnit_Framework_TestCase
      */
     public function additionalDataProvider()
     {
-        return array(
-            array(array(1, 2, 3, 4), 1),
-            array(array(array(1, 2), 3, 4), 2),
-            array(array(array(array(1), 2), 3, 4), 3),
-        );
+        return [
+            [[1, 2, 3, 4], 1],
+            [[[1, 2], 3, 4], 2],
+            [[[[1], 2], 3, 4], 3],
+        ];
     }
     
     /**
@@ -367,16 +367,16 @@ class MessageValidatorTest extends \PHPUnit_Framework_TestCase
      */
     public function severityProvider()
     {
-        return array(
-            array(Expression\Severity::INFO),
-            array(Expression\Severity::DEBUG),
-            array(Expression\Severity::ERROR),
-            array(Expression\Severity::FATAL),
-            array(Expression\Severity::UNKOWN),
-            array(Expression\Severity::WARN),
-            array(9999),
-            array(-9999),
-        );
+        return [
+            [Expression\Severity::INFO],
+            [Expression\Severity::DEBUG],
+            [Expression\Severity::ERROR],
+            [Expression\Severity::FATAL],
+            [Expression\Severity::UNKOWN],
+            [Expression\Severity::WARN],
+            [9999],
+            [-9999],
+        ];
     }
 
     /**
@@ -385,17 +385,17 @@ class MessageValidatorTest extends \PHPUnit_Framework_TestCase
      */
     public function typeProvider()
     {
-        return array(
-            array(123), //int
-            array(123.123), // float
-            array(false), // boolean
-            array('123'), //string
-            array(array('test')), // array
-            array(new stdClass()), // object
-            array(null), // NULL
-            array(function(){ return true; }), // Callback
-            array(fopen(__FILE__, "r")), // resource
-        );
+        return [
+            [123], //int
+            [123.123], // float
+            [false], // boolean
+            ['123'], //string
+            [['test']], // array
+            [new stdClass()], // object
+            [null], // NULL
+            [function(){ return true; }], // Callback
+            [fopen(__FILE__, "r")], // resource
+        ];
     }
     
     /**
@@ -404,11 +404,11 @@ class MessageValidatorTest extends \PHPUnit_Framework_TestCase
      */
     public function exceptionsDataProvider()
     {
-        return array(
-            array(array(new \Exception("foobar"), new \Exception("foobar")), true),
-            array(array(new \Exception("foobar"), new stdClass()), false),
-            array(array(new stdClass(), new stdClass()), false),
-        );
+        return [
+            [[new \Exception("foobar"), new \Exception("foobar")], true],
+            [[new \Exception("foobar"), new stdClass()], false],
+            [[new stdClass(), new stdClass()], false],
+        ];
     }
 
     /**
@@ -417,12 +417,12 @@ class MessageValidatorTest extends \PHPUnit_Framework_TestCase
      */
     public function linesProvider()
     {
-        return array(
-            array(array(new Line(), new Line()), true),
-            array(array(new Line(), new stdClass()), false),
-            array(array(new stdClass(), new stdClass()), false),
-            array(array(new stdClass(), 'foobar'), false),
-            array(array(new Line(), 'foobar'), false),
-        );
+        return [
+            [[new Line(), new Line()], true],
+            [[new Line(), new stdClass()], false],
+            [[new stdClass(), new stdClass()], false],
+            [[new stdClass(), 'foobar'], false],
+            [[new Line(), 'foobar'], false],
+        ];
     }
 }

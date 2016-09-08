@@ -25,7 +25,7 @@ class FilteredRequestInformationDecoratorTest extends AbstractRequestInformation
     {
         parent::setUp();
         
-        $this->decorator = new FilteredRequestInformationDecorator($this->instance, array(self::TEST_FILTER_FIELD), self::TEST_FILTER_MASK);
+        $this->decorator = new FilteredRequestInformationDecorator($this->instance, [self::TEST_FILTER_FIELD], self::TEST_FILTER_MASK);
     }
 
     /**
@@ -69,7 +69,7 @@ class FilteredRequestInformationDecoratorTest extends AbstractRequestInformation
      */
     public function testHeaders($headers)
     {
-        $additionalTestHeader = array("test" => "additional");
+        $additionalTestHeader = ["test" => "additional"];
 
         $this->assertCount(0, $this->decorator->getHeaders());
 
@@ -88,7 +88,7 @@ class FilteredRequestInformationDecoratorTest extends AbstractRequestInformation
      */
     public function testQueryParameters($queryParameter)
     {
-        $additionalTestQueryParameter = array("test" => "additional");
+        $additionalTestQueryParameter = ["test" => "additional"];
 
         $this->assertCount(0, $this->decorator->getQueryParameters());
 
@@ -107,7 +107,7 @@ class FilteredRequestInformationDecoratorTest extends AbstractRequestInformation
      */
     public function testBodyParameters($bodyParameter)
     {
-        $additionalTestBodyParameter = array("test" => "additional");
+        $additionalTestBodyParameter = ["test" => "additional"];
 
         $this->assertCount(0, $this->decorator->getBodyParameters());
 
@@ -171,17 +171,17 @@ class FilteredRequestInformationDecoratorTest extends AbstractRequestInformation
      */
     public function parameterProvider()
     {
-        return array(
-            array(array(
+        return [
+            [[
                 'Accept'    => 'Nothing',
                 'Foo'       => 'Bar',
                 'Feels'     => 'BadMan',
-            )),
-            array(array(
+            ]],
+            [[
                 'Decline'   => 'Nothing',
                 'Bar'       => 'Foo',
-            )),
-        );
+            ]],
+        ];
     }
 
     /**
@@ -190,19 +190,19 @@ class FilteredRequestInformationDecoratorTest extends AbstractRequestInformation
      */
     public function credentialParameterProvider()
     {
-        return array(
-            array(array(
+        return [
+            [[
                 'Accept'    => 'Nothing',
                 'Foo'       => 'Bar',
                 'Feels'     => 'BadMan',
-            )),
-            array(array(
+            ]],
+            [[
                 'password'  => 'Nothing',
                 'Bar'       => 'Foo',
-            )),
-            array(array(
+            ]],
+            [[
                 'password'  => 'foo-bar',
-            )),
-        );
+            ]],
+        ];
     }
 }

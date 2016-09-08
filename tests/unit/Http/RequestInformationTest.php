@@ -47,7 +47,7 @@ class RequestInformationTest extends AbstractRequestInformationTest
      */
     public function testHeaders($headers)
     {
-        $additionalTestHeader = array("test" => "additional");
+        $additionalTestHeader = ["test" => "additional"];
         
         $this->assertCount(0, $this->instance->getHeaders());
         
@@ -64,7 +64,7 @@ class RequestInformationTest extends AbstractRequestInformationTest
      */
     public function testQueryParameters($queryParameter)
     {
-        $additionalTestQueryParameter = array("test" => "additional");
+        $additionalTestQueryParameter = ["test" => "additional"];
 
         $this->assertCount(0, $this->instance->getQueryParameters());
 
@@ -81,7 +81,7 @@ class RequestInformationTest extends AbstractRequestInformationTest
      */
     public function testBodyParameters($bodyParameter)
     {
-        $additionalTestBodyParameter = array("test" => "additional");
+        $additionalTestBodyParameter = ["test" => "additional"];
 
         $this->assertCount(0, $this->instance->getBodyParameters());
 
@@ -99,16 +99,16 @@ class RequestInformationTest extends AbstractRequestInformationTest
      */
     public function parameterProvider()
     {
-        return array(
-            array(array(
+        return [
+            [[
                 'Accept'    => 'Nothing',
                 'Foo'       => 'Bar',
                 'Feels'     => 'BadMan',
-            )),
-            array(array(
+            ]],
+            [[
                 'Decline'   => 'Nothing',
                 'Bar'       => 'Foo',
-            )),
-        );
+            ]],
+        ];
     }
 }

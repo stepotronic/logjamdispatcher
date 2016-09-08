@@ -26,20 +26,20 @@ class ZmqDispatcherTest extends \PHPUnit_Framework_TestCase
         $requestInformation = new RequestInformation();
         $requestInformation
             ->setMethod('GET')
-            ->setHeaders(array('Accept' => 'Nothing', 'Feels' => 'BadMan'))
-            ->setBodyParameters(array('action' => 'submit'))
-            ->setQueryParameters(array('page' => '15', 'offset' => '213123'))
+            ->setHeaders(['Accept' => 'Nothing', 'Feels' => 'BadMan'])
+            ->setBodyParameters(['action' => 'submit'])
+            ->setQueryParameters(['page' => '15', 'offset' => '213123'])
             ->setUrl('my.app.page/products');
 
 
         $this->message
             ->setAction('MyApp::MyController#MyAction')
-            ->setAdditionalData(array('stuff' => 'theUserDid'))
+            ->setAdditionalData(['stuff' => 'theUserDid'])
             ->setCallerAction('') //value of http request header X-Logjam-Action (if present)
             ->setCallerId('')     //value of http request header X-Logjam-Caller-Id (if present)
             ->setDbCalls(12)
             ->setDbTime(123123.123)
-            ->setExceptions(array(new \Exception("Test Exception")))
+            ->setExceptions([new \Exception("Test Exception")])
             ->setHost('my.app.host')
             ->setIp('123.321.123.321')
             ->setRequestId(new RequestId())
@@ -137,7 +137,7 @@ class ZmqDispatcherTest extends \PHPUnit_Framework_TestCase
          */
         $zmqSocketMock = $this->getZMQSocketMock();
         
-        $dispatcher = new ZmqDispatcher($zmqSocketMock, array('tcp://willneverconnect'), 'testapp', 'testenv');
+        $dispatcher = new ZmqDispatcher($zmqSocketMock, ['tcp://willneverconnect'], 'testapp', 'testenv');
 
         return [$dispatcher, $zmqSocketMock];
     }
@@ -149,10 +149,10 @@ class ZmqDispatcherTest extends \PHPUnit_Framework_TestCase
      */
     protected function getZMQSocketMock()
     {
-        $ZMQSocketMock = $this->getMock('ZMQSocket', array(
+        $ZMQSocketMock = $this->getMock('ZMQSocket', [
             'connect',
             'sendmulti',
-        ), array(), '', false);
+        ], [], '', false);
         
         $ZMQSocketMock->method('connect')->willReturn(true);
         

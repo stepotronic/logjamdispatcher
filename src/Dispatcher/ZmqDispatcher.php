@@ -19,7 +19,7 @@ class ZmqDispatcher implements DispatcherInterface
     /**
      * @var array
      */
-    protected $brokers = array();
+    protected $brokers = [];
     
     /**
      * @var ZMQSocket
@@ -44,7 +44,7 @@ class ZmqDispatcher implements DispatcherInterface
     /**
      * @var array
      */
-    protected $exceptions = array();
+    protected $exceptions = [];
 
     /**
      * ZmqDispatcher constructor.
@@ -82,11 +82,11 @@ class ZmqDispatcher implements DispatcherInterface
             
             MessageValidator::validate($message);
 
-            $this->queue->sendmulti(array(
-                $this->application . '-' . $this->environment,
-                'logs.' . $this->application . '.' . $this->environment,
-                json_encode($message)
-            ));
+            $this->queue->sendmulti([
+                    $this->application . '-' . $this->environment,
+                    'logs.' . $this->application . '.' . $this->environment,
+                    json_encode($message)
+            ]);
             
         } catch (ZMQException $exception) {
             // Catch ZeroMQ Exceptions

@@ -170,9 +170,9 @@ class MessageTest extends AbstractMessageTest
      */
     public function testUrl()
     {
-        $testUrl = array('my/url/is/foo/bar');
+        $testUrl = ['my/url/is/foo/bar'];
 
-        $this->assertSame(array(), $this->instance->getUrl());
+        $this->assertSame([], $this->instance->getUrl());
         $this->instance->setUrl($testUrl);
         $this->assertInternalType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $this->instance->getUrl());
         $this->assertSame($testUrl, $this->instance->getUrl());
@@ -184,9 +184,9 @@ class MessageTest extends AbstractMessageTest
      */
     public function testExceptions()
     {
-        $testExceptions = array(new \Exception());
+        $testExceptions = [new \Exception()];
 
-        $this->assertSame(array(), $this->instance->getExceptions());
+        $this->assertSame([], $this->instance->getExceptions());
         $this->instance->setExceptions($testExceptions);
         $this->assertInternalType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $this->instance->getExceptions());
         $this->assertSame($testExceptions, $this->instance->getExceptions());
@@ -194,9 +194,9 @@ class MessageTest extends AbstractMessageTest
 
     public function testAdditionalData()
     {
-        $testAdditionalData = array("foo" => "bar");
+        $testAdditionalData = ["foo" => "bar"];
 
-        $this->assertSame(array(), $this->instance->getAdditionalData());
+        $this->assertSame([], $this->instance->getAdditionalData());
         $this->instance->setAdditionalData($testAdditionalData);
         $this->assertInternalType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $this->instance->getAdditionalData());
         $this->assertSame($testAdditionalData, $this->instance->getAdditionalData());
@@ -233,9 +233,9 @@ class MessageTest extends AbstractMessageTest
      */
     public function testLines()
     {
-        $testLines = array(new Line());
+        $testLines = [new Line()];
 
-        $this->assertSame(array(), $this->instance->getLines());
+        $this->assertSame([], $this->instance->getLines());
 
         $this->assertInternalType(PHPUnit_Framework_Constraint_IsType::TYPE_BOOL, $this->instance->hasLines());
         $this->assertSame(false, $this->instance->hasLines());

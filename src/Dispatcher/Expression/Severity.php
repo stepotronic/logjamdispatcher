@@ -37,12 +37,12 @@ class Severity
     /**
      * @var array
      */
-    static public $all = array(
+    static public $all = [
         self::DEBUG,
         self::INFO,
         self::WARN,
         self::ERROR,
         self::FATAL,
         self::UNKOWN,
-    );
+    ];
 }

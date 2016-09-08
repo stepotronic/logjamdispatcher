@@ -475,7 +475,7 @@ class Message implements MessageInterface
      */
     public function jsonSerialize()
     {
-        $logArray =  array(
+        $logArray =  [
             // required
             'action'        => $this->getAction(),
             'started_at'    => $this->getRequestStartedAt()->format('c'), // ISO 8601
@@ -488,17 +488,17 @@ class Message implements MessageInterface
             'user_id'       => $this->getUserId(),
             'host'          => $this->getHost(),
             'ip'            => $this->getIp(),
-            'request_info'   => array(
+            'request_info'   => [
                 'query_parameters' => $this->getHttpRequestInformation()->getQueryParameters(),
                 'headers'          => $this->getHttpRequestInformation()->getHeaders(),
                 'url'               => $this->getHttpRequestInformation()->getUrl(),
                 'method'           => $this->getHttpRequestInformation()->getMethod(),
                 'body_parameters'  => $this->getHttpRequestInformation()->getBodyParameters(),
-            ),
+            ],
             'exceptions'     => $this->getExceptions(),
             'message'        => $this->getAdditionalData(),
             'request_id'     => $this->getRequestId()->getId(),
-        );
+        ];
 
 
         // Optional parameters
@@ -511,10 +511,10 @@ class Message implements MessageInterface
         }
 
         if ($this->hasLines()) {
-            $logArray['lines'] = array();
+            $logArray['lines'] = [];
             
             foreach ($this->getLines() as $line) {
-                $logArray['lines'][] = array($line->getSeverity(), TimeHelper::convertDateTimeToMicrotime($line->getMicroTime()), $line->getMessage());
+                $logArray['lines'][] = [$line->getSeverity(), TimeHelper::convertDateTimeToMicrotime($line->getMicroTime()), $line->getMessage()];
             }
         }
         
