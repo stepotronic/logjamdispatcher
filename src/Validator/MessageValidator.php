@@ -16,6 +16,16 @@ use LogjamDispatcher\Logjam\RequestIdInterface;
  */
 class MessageValidator
 {
+    const TYPE_ERROR = 'Expected %s, %s given.';
+    const SEVERITY_ERROR = 'Expected valid severity (%s).';
+    const EXCEPTIONS_ERROR = 'Not an Exception';
+    const ADDITIONAL_DATA_ERROR = 'Additional data should not be deeper than 1 level.';
+    const HTTP_CODE_ERROR = 'Expected HTTP status code, %s given';
+    
+    const REQUEST_ID_NULL_EXCEPTION = 'Request id is required and cannot be NULL.';
+    const REQUEST_INFORMATION_NULL_EXCEPTION = 'Request informations are required and cannot be NULL';
+    
+    
     /**
      * @param MessageInterface $message
      */
@@ -39,7 +49,7 @@ class MessageValidator
     public static function validateAction($action)
     {
         if (!is_string($action)) {
-            throw new ValidationException(sprintf('Expected string, %s given', gettype($action)));
+            throw new ValidationException(sprintf(self::TYPE_ERROR, "string", gettype($action)));
         }
         
         if (!preg_match('/^\w+\:\:\w+\#\w+/', $action)) {
@@ -54,18 +64,7 @@ class MessageValidator
     public static function validateRequestStartedTimestamp($requestStartedTimestamp)
     {
         if (!is_int($requestStartedTimestamp)) {
-            throw new ValidationException(sprintf('Expected integer, %s given', gettype($requestStartedTimestamp)));
-        }
-    }
-
-    /**
-     * @param  int $requestStartedTimestampInMilliseconds
-     * @throws ValidationException
-     */
-    public static function validateRequestStartedTimestampInMilliseconds($requestStartedTimestampInMilliseconds)
-    {
-        if (!is_int($requestStartedTimestampInMilliseconds)) {
-            throw new ValidationException(sprintf('Expected integer, %s given', gettype($requestStartedTimestampInMilliseconds)));
+            throw new ValidationException(sprintf(self::TYPE_ERROR, "integer", gettype($requestStartedTimestamp)));
         }
     }
 
@@ -76,7 +75,7 @@ class MessageValidator
     public static function validateTotalTime($totalTime)
     {
         if (!is_float($totalTime)) {
-            throw new ValidationException(sprintf('Expected float, %s given', gettype($totalTime)));
+            throw new ValidationException(sprintf(self::TYPE_ERROR, "float", gettype($totalTime)));
         }
     }
 
@@ -87,11 +86,11 @@ class MessageValidator
     public static function validateResponseCode($responseCode)
     {
         if (!is_int($responseCode)) {
-            throw new ValidationException(sprintf('Expected integer, %s given', gettype($responseCode)));
+            throw new ValidationException(sprintf(self::TYPE_ERROR, "integer", gettype($responseCode)));
         }
         
         if ($responseCode < 100 || $responseCode > 511) {
-            throw new ValidationException(sprintf('Expected HTTP status code, %s given', $responseCode));
+            throw new ValidationException(sprintf(self::HTTP_CODE_ERROR, $responseCode));
         }
     }
 
@@ -102,11 +101,11 @@ class MessageValidator
     public static function validateSeverity($severity)
     {
         if (!is_int($severity)) {
-            throw new ValidationException(sprintf('Expected integer, %s given', gettype($severity)));
+            throw new ValidationException(sprintf(self::TYPE_ERROR, "integer", gettype($severity)));
         }
         
         if (!in_array($severity, Expression\Severity::$all)) {
-            throw new ValidationException(sprintf('Expected valid severity (%s)', implode(', ', Expression\Severity::$all)));
+            throw new ValidationException(sprintf(self::SEVERITY_ERROR, implode(', ', Expression\Severity::$all)));
         }
     }
 
@@ -117,7 +116,7 @@ class MessageValidator
     public static function validateCallerId($callerId)
     {
         if (!is_string($callerId)) {
-            throw new ValidationException(sprintf('Expected string, %s given', gettype($callerId)));
+            throw new ValidationException(sprintf(self::TYPE_ERROR, "string", gettype($callerId)));
         }
     }
 
@@ -128,7 +127,7 @@ class MessageValidator
     public static function validateCallerAction($callerAction)
     {
         if (!is_string($callerAction)) {
-            throw new ValidationException(sprintf('Expected string, %s given', gettype($callerAction)));
+            throw new ValidationException(sprintf(self::TYPE_ERROR, "string", gettype($callerAction)));
         }
     }
 
@@ -139,7 +138,7 @@ class MessageValidator
     public static function validateUserId($userId)
     {
         if (!is_string($userId)) {
-            throw new ValidationException(sprintf('Expected string, %s given', gettype($userId)));
+            throw new ValidationException(sprintf(self::TYPE_ERROR, "string", gettype($userId)));
         }
     }
 
@@ -150,7 +149,7 @@ class MessageValidator
     public static function validateHost($host)
     {
         if (!is_string($host)) {
-            throw new ValidationException(sprintf('Expected string, %s given', gettype($host)));
+            throw new ValidationException(sprintf(self::TYPE_ERROR, "string", gettype($host)));
         }
     }
 
@@ -161,7 +160,7 @@ class MessageValidator
     public static function validateIp($ip)
     {
         if (!is_string($ip)) {
-            throw new ValidationException(sprintf('Expected string, %s given', gettype($ip)));
+            throw new ValidationException(sprintf(self::TYPE_ERROR, "string", gettype($ip)));
         }
     }
 
@@ -173,7 +172,7 @@ class MessageValidator
     {
         foreach ($exceptions as $exception) {
             if (!$exception instanceof \Exception) {
-                throw new ValidationException("Not an Exception");
+                throw new ValidationException(self::EXCEPTIONS_ERROR);
             }
         }
     }
@@ -186,7 +185,7 @@ class MessageValidator
     {
         foreach($additionalData as $row) {
             if (is_array($row)) {
-                throw new ValidationException("Additional data should not be deeper than 1 level.");
+                throw new ValidationException(self::ADDITIONAL_DATA_ERROR);
             }
         }
     }
@@ -199,7 +198,7 @@ class MessageValidator
     public static function validateDbCalls($dbCalls)
     {
         if (!is_int($dbCalls) && $dbCalls !== null) {
-            throw new ValidationException(sprintf('Expected integer, %s given', gettype($dbCalls)));
+            throw new ValidationException(sprintf(self::TYPE_ERROR, "integer", gettype($dbCalls)));
         }
     }
 
@@ -211,7 +210,7 @@ class MessageValidator
     public static function validateDbTime($dbTime)
     {
         if (!is_float($dbTime) && $dbTime !== null) {
-            throw new ValidationException(sprintf('Expected integer, %s given', gettype($dbTime)));
+            throw new ValidationException(sprintf(self::TYPE_ERROR, "float", gettype($dbTime)));
         }
     }
 
@@ -223,7 +222,7 @@ class MessageValidator
     {
         foreach ($lines as $line) {
             if (!$line instanceof LineInterface) {
-                throw new ValidationException(sprintf('Expexted "%s", "%s" given', LineInterface::class, self::formatValueToString($line)));
+                throw new ValidationException(sprintf(self::TYPE_ERROR, LineInterface::class, self::formatValueToString($line)));
             }
         }
     }
@@ -232,10 +231,10 @@ class MessageValidator
      * @param  RequestIdInterface $requestId
      * @throws ValidationException
      */
-    public static function validateRequestId(RequestIdInterface $requestId)
+    public static function validateRequestId($requestId)
     {
         if ($requestId === null) {
-            throw new ValidationException("Request id is required and cannot be NULL.");
+            throw new ValidationException(self::REQUEST_ID_NULL_EXCEPTION);
         }
     }
 
@@ -243,17 +242,17 @@ class MessageValidator
      * @param  RequestInformationInterface $httpRequestInformation
      * @throws ValidationException
      */
-    public static function validateHttpRequestInformation(RequestInformationInterface $httpRequestInformation)
+    public static function validateHttpRequestInformation($httpRequestInformation)
     {
         if ($httpRequestInformation === null) {
-            throw new ValidationException("Request informations are required and cannot be NULL");
+            throw new ValidationException(self::REQUEST_INFORMATION_NULL_EXCEPTION);
         }
     }
 
     /**
      * @param mixed $value
      */
-    static protected function formatValueToString($value) {
+    static public function formatValueToString($value) {
         if('object' === ($type = gettype($value))) {
             return get_class($value);
         }

@@ -2,17 +2,13 @@
 
 namespace LogjamDispatcher\Dispatcher;
 
-use LogjamDispatcher\Http\RequestInformation;
-use LogjamDispatcher\Logjam\Message;
 use LogjamDispatcher\Logjam\MessageInterface;
-use LogjamDispatcher\Logjam\RequestId;
 use LogjamDispatcher\Validator\MessageValidator;
 
 use LogjamDispatcher\Exception\LogjamDispatcherException;
 
-use ZMQ;
-use ZMQContext;
 use ZMQSocket;
+use ZMQException;
 use ZMQSocketException;
 
 /**
@@ -52,14 +48,14 @@ class ZmqDispatcher implements DispatcherInterface
 
     /**
      * ZmqDispatcher constructor.
+     * @param ZMQSocket $socket
      * @param array $brokers ZeroMQ Broker addresses (tcp://host:port).
      * @param $application
      * @param string $environment String that identifies the environment the app is in.
-     * @param array $fieldsToFilter Array of identifiers in post or get data that should be filtered from the log data.
-     * @param string $filterMask String to replace the filtered data with.
      */
-    public function __construct(array $brokers, $application, $environment)
+    public function __construct(ZMQSocket $socket, array $brokers, $application, $environment)
     {
+        $this->queue = $socket;
         $this->brokers = $brokers;
         $this->environment = $environment;
         $this->application = $application;
@@ -72,6 +68,8 @@ class ZmqDispatcher implements DispatcherInterface
      */
     public function dispatch(MessageInterface $message)
     {
+        $this->exceptions = [];
+        
         if ($this->isConnected === null) {
             $this->connect();
         }
@@ -89,7 +87,7 @@ class ZmqDispatcher implements DispatcherInterface
                 json_encode($message)
             ));
             
-        } catch (ZMQSocketException $exception) {
+        } catch (ZMQException $exception) {
             // Catch ZeroMQ Exceptions
             $this->addDispatchException($exception);
 
@@ -109,7 +107,7 @@ class ZmqDispatcher implements DispatcherInterface
      */
     protected function connect()
     {
-        if ($this->setupSocket()) {
+        if(false == $this->isConnected) {
             foreach($this->brokers as $broker) {
                 try {
                     $this->queue->connect($broker);
@@ -119,26 +117,7 @@ class ZmqDispatcher implements DispatcherInterface
                     $this->addDispatchException($exception);
                 }
             }
-        } else {
-            $this->isConnected = false;
         }
-    }
-    
-    /**
-     * Tries to setup a ZeroMQ-Socket.
-     * @return bool
-     */
-    protected function setupSocket()
-    {
-        $successful = false;
-        try {
-            $this->queue = new ZMQSocket(new ZMQContext(), ZMQ::SOCKET_PUSH);
-            $successful = true;
-        } catch(ZMQSocketException $exception) {
-            $this->addDispatchException($exception);
-        }
-        
-        return $successful;
     }
 
     /**

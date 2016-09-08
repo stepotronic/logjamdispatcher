@@ -2,6 +2,7 @@
 
 namespace LogjamDispatcher\Logjam;
 
+use LogjamDispatcher\Helper\TimeHelper;
 use LogjamDispatcher\Dispatcher\Expression;
 use LogjamDispatcher\Http\RequestInformationInterface;
 
@@ -13,27 +14,22 @@ class Message implements MessageInterface
     /**
      * @var string
      */
-    protected $action = 0;
+    protected $action;
+    
+    /**
+     * @var \DateTime
+     */
+    protected $requestStartedAt;
+    
+    /**
+     * @var \DateTime
+     */
+    protected $requestEndedAt;
     
     /**
      * @var int
      */
-    protected $requestStartedTimestamp = 0;
-    
-    /**
-     * @var int
-     */
-    protected $requestStartedTimestampInMilliseconds = 0;
-    
-    /**
-     * @var float
-     */
-    protected $totalTime = 0.0;
-    
-    /**
-     * @var int
-     */
-    protected $responseCode = 0;
+    protected $responseCode;
     
     /**
      * @var int
@@ -43,27 +39,27 @@ class Message implements MessageInterface
     /**
      * @var string
      */
-    protected $callerId = '';
+    protected $callerId;
     
     /**
      * @var string
      */
-    protected $callerAction = '';
+    protected $callerAction;
     
     /**
      * @var int
      */
-    protected $userId = 0;
+    protected $userId;
     
     /**
      * @var string
      */
-    protected $host = '';
+    protected $host;
     
     /**
      * @var string
      */
-    protected $ip = '';
+    protected $ip;
     
     /**
      * @var RequestIdInterface
@@ -73,17 +69,17 @@ class Message implements MessageInterface
     /**
      * @var array
      */
-    protected $url = array();
+    protected $url = [];
     
     /**
      * @var array
      */
-    protected $exceptions = array();
+    protected $exceptions = [];
     
     /**
      * @var array
      */
-    protected $additionalData = array();
+    protected $additionalData = [];
     
     /**
      * @var float
@@ -124,57 +120,48 @@ class Message implements MessageInterface
     }    
     
     /**
-     * @return int
+     * @return \DateTime
      */
-    public function getRequestStartedTimestamp()
+    public function getRequestStartedAt()
     {
-        return $this->requestStartedTimestamp;
+        return $this->requestStartedAt;
     }
     
     /**
-     * @param int $requestStartedTimestamp
+     * @param \DateTime $requestStartedAt
      * @return $this
      */
-    public function setRequestStartedTimestamp($requestStartedTimestamp)
+    public function setRequestStartedAt(\DateTime $requestStartedAt)
     {
-        $this->requestStartedTimestamp = $requestStartedTimestamp;
+        $this->requestStartedAt = $requestStartedAt;
+        
         return $this;
     }
-    
+
     /**
-     * @return int
+     * @return \DateTime
      */
-    public function getRequestStartedTimestampInMilliseconds()
+    public function getRequestEndedAt()
     {
-        return $this->requestStartedTimestampInMilliseconds;
+        return $this->requestEndedAt;
     }
     
     /**
-     * @param int $requestStartedTimestampInMilliseconds
+     * @param \DateTime $requestEndedAt
      * @return $this
      */
-    public function setRequestStartedTimestampInMilliseconds($requestStartedTimestampInMilliseconds)
+    public function setRequestEndedAt(\DateTime $requestEndedAt)
     {
-        $this->requestStartedTimestampInMilliseconds = $requestStartedTimestampInMilliseconds;
+        $this->requestEndedAt = $requestEndedAt;
         return $this;
     }
-    
+
     /**
-     * @return float
+     * @return int
      */
     public function getTotalTime()
     {
-        return $this->totalTime;
-    }
-    
-    /**
-     * @param float $totalTime
-     * @return $this
-     */
-    public function setTotalTime($totalTime)
-    {
-        $this->totalTime = $totalTime;
-        return $this;
+        return TimeHelper::convertDateTimeToMicrotime($this->getRequestEndedAt()) - TimeHelper::convertDateTimeToMicrotime($this->getRequestStartedAt());
     }
     
     /**
@@ -467,14 +454,14 @@ class Message implements MessageInterface
      * which is a value of any type other than a resource.
      * @since 5.4.0
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         $logArray =  array(
             // required
             'action'        => $this->getAction(),
-            'started_at'    => date('c', $this->getRequestStartedTimestamp()), // ISO 8601
-            'started_ms'    => $this->getRequestStartedTimestampInMilliseconds(),
-            'total_time'    => round($this->getTotalTime(), 5),
+            'started_at'    => $this->getRequestStartedAt()->format('c'), // ISO 8601
+            'started_ms'    => TimeHelper::convertDateTimeToMillitime($this->getRequestStartedAt()),
+            'total_time'    => $this->getTotalTime(),
             'code'          => $this->getResponseCode(),
             'severity'      => $this->getSeverity(),
             'caller_id'     => $this->getCallerId(),
@@ -506,8 +493,9 @@ class Message implements MessageInterface
 
         if ($this->hasLines()) {
             $logArray['lines'] = array();
+            
             foreach ($this->getLines() as $line) {
-                $logArray['lines'][] = array($line->getSeverity(), $line->getMicroTimestamp(), $line->getMessage());
+                $logArray['lines'][] = array($line->getSeverity(), TimeHelper::convertDateTimeToMicrotime($line->getMicroTime()), $line->getMessage());
             }
         }
         

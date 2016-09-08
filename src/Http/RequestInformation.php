@@ -17,17 +17,17 @@ class RequestInformation implements RequestInformationInterface
     /**
      * @var array
      */
-    protected $headers;
+    protected $headers = [];
 
     /**
      * @var array
      */
-    protected $queryParameters;
+    protected $queryParameters = [];
 
     /**
      * @var array
      */
-    protected $bodyParameters;
+    protected $bodyParameters = [];
 
     /**
      * @return string
@@ -87,6 +87,15 @@ class RequestInformation implements RequestInformationInterface
     }
 
     /**
+     * @param string $name
+     * @param string $value
+     */
+    public function addHeader($name, $value)
+    {
+        $this->headers[$name] = $value;
+    }
+
+    /**
      * @return array
      */
     public function getQueryParameters()
@@ -106,6 +115,15 @@ class RequestInformation implements RequestInformationInterface
     }
 
     /**
+     * @param string $name
+     * @param string $value
+     */
+    public function addQueryParameter($name, $value)
+    {
+        $this->queryParameters[$name] = $value;
+    }
+    
+    /**
      * @return array
      */
     public function getBodyParameters()
@@ -122,5 +140,14 @@ class RequestInformation implements RequestInformationInterface
         $this->bodyParameters = $bodyParameters;
 
         return $this;
+    }
+
+    /**
+     * @param $name
+     * @param $value
+     */
+    public function addBodyParameter($name, $value)
+    {
+        $this->bodyParameters[$name] = $value;
     }
 }

@@ -14,20 +14,20 @@ interface MessageInterface extends \JsonSerializable
     public function getAction();
     
     /**
-     * @return int
+     * @return \DateTime
      */
-    public function getRequestStartedTimestamp();
+    public function getRequestStartedAt();
+
+    /**
+     * @return \DateTime
+     */
+    public function getRequestEndedAt();
 
     /**
      * @return int
-     */
-    public function getRequestStartedTimestampInMilliseconds();
-
-    /**
-     * @return float
      */
     public function getTotalTime();
-
+    
     /**
      * @return int
      */

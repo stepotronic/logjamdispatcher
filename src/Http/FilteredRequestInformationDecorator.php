@@ -57,7 +57,7 @@ class FilteredRequestInformationDecorator implements RequestInformationInterface
      */
     public function getHeaders()
     {
-        return $this->requestInformation->getHeaders();
+        return $this->filter($this->requestInformation->getHeaders());
     }
 
     /**

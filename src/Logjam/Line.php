@@ -2,6 +2,7 @@
 
 namespace LogjamDispatcher\Logjam;
 
+use Cvmaker\Xing\User\Date;
 use LogjamDispatcher\Dispatcher\Expression;
 
 class Line implements LineInterface
@@ -17,21 +18,21 @@ class Line implements LineInterface
     protected $message;
 
     /**
-     * @var string
+     * @var \DateTime
      */
-    protected $microTimestamp;
+    protected $microTime;
 
     /**
      * Line constructor.
      * @param int $severity
      * @param string $message
-     * @param string $microTimestamp
+     * @param \DateTime $microTimestamp
      */
-    public function __construct($severity = Expression\Severity::UNKOWN, $message = '', $microTimestamp = '')
+    public function __construct($severity = Expression\Severity::UNKOWN, $message = '', \DateTime $microTime = null)
     {
         $this->severity = $severity;
         $this->message = $message;
-        $this->microTimestamp = $microTimestamp;
+        $this->microTime = $microTime;
     }
 
     /**
@@ -51,10 +52,10 @@ class Line implements LineInterface
     }
 
     /**
-     * @return string
+     * @return \DateTime
      */
-    public function getMicroTimestamp()
+    public function getMicroTime()
     {
-        return $this->microTimestamp;
+        return $this->microTime;
     }
 }

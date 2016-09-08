@@ -8,5 +8,5 @@ interface LineInterface
     
     public function getMessage();
     
-    public function getMicroTimestamp();
+    public function getMicroTime();
 }
