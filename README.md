@@ -79,11 +79,10 @@ $message
     ->setIp('123.321.123.321')
     ->setRequestId(new RequestId())
     ->setRequestInformation($requestInformation)
-    ->setRequestStartedTimestamp($myStartTime)
-    ->setRequestStartedTimestampInMilliseconds(microtime(true))
+    ->setRequestStartedAt($myStartTimeDateTimeObject)
+    ->setRequestEndedAt($myEndTimeDateTimeObject)
     ->setResponseCode(200)
     ->setSeverity(Expression\Severity::INFO)
-    ->setTotalTime(time() - $myStartTime)
     ->setUserId(0);
 ````
 
