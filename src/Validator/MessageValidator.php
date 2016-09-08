@@ -269,7 +269,7 @@ class MessageValidator
     /**
      * @param mixed $value
      */
-    static public function formatValueToString($value) {
+    public static function formatValueToString($value) {
         if('object' === ($type = gettype($value))) {
             return get_class($value);
         }
