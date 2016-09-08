@@ -88,7 +88,7 @@ class FilteredRequestInformationDecorator implements RequestInformationInterface
      * 
      * @return $array
      */
-    protected function filter($array)
+    protected function filter(array $array)
     {
         foreach($array as $key => &$value) {
             if(in_array($key, $this->filterFields)) {
