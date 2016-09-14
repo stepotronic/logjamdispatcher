@@ -148,8 +148,8 @@ class RequestInformation implements RequestInformationInterface
     }
 
     /**
-     * @param $name
-     * @param $value
+     * @param string $name
+     * @param string|int $value
      */
     public function addBodyParameter($name, $value)
     {

@@ -53,7 +53,7 @@ class MessageValidator
             throw new ValidationException(sprintf(self::TYPE_ERROR, "string", gettype($action)));
         }
         
-        if (!preg_match('/^\w+\:\:\w+\#\w+/', $action)) {
+        if (!preg_match('/^\w+(::\w+)+#\w+/', $action)) {
             throw new ValidationException('Format of given action is not well formatted. Choose a format in following pattern: "Logjam::LogjamController#index" (/^\\w+\\:\\:\\w+\\#\\w+/).');
         }
     }
@@ -270,7 +270,7 @@ class MessageValidator
      * @param mixed $value
      */
     public static function formatValueToString($value) {
-        if('object' === ($type = gettype($value))) {
+        if ('object' === ($type = gettype($value))) {
             return get_class($value);
         }
         

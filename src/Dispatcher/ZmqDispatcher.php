@@ -7,7 +7,9 @@ use LogjamDispatcher\Validator\MessageValidator;
 
 use LogjamDispatcher\Exception\LogjamDispatcherException;
 
+use ZMQ;
 use ZMQSocket;
+use ZMQContext;
 use ZMQException;
 use ZMQSocketException;
 
@@ -53,14 +55,19 @@ class ZmqDispatcher implements DispatcherInterface
      * @param $application
      * @param string $environment String that identifies the environment the app is in.
      */
-    public function __construct(ZMQSocket $socket, array $brokers, $application, $environment)
+    public function __construct(array $brokers, $application, $environment, ZMQSocket $socket = null)
     {
+        if ($socket === null) {
+            $socket = self::createZmqSocket();
+        }
+        
         $this->queue = $socket;
         $this->brokers = $brokers;
         $this->environment = $environment;
         $this->application = $application;
     }
     
+
     /**
      * Dispatches the message
      * @param MessageInterface $message
@@ -108,7 +115,8 @@ class ZmqDispatcher implements DispatcherInterface
      */
     protected function connect()
     {
-        if(false == $this->isConnected) {
+        if(false === $this->isConnected) {
+            
             foreach($this->brokers as $broker) {
                 try {
                     $this->queue->connect($broker);
@@ -119,6 +127,23 @@ class ZmqDispatcher implements DispatcherInterface
                 }
             }
         }
+    }
+
+    /**
+     * Factory method for a ZMQSocket
+     * 
+     * @param  ZMQContext|null $context
+     * @param  int $socketType
+     * 
+     * @return ZMQSocket
+     */
+    public static function createZmqSocket(ZMQContext $context = null, $socketType = ZMQ::SOCKET_PUSH)
+    {
+        if ($context === null) {
+            $context = new ZMQContext();
+        }
+        
+        return new ZMQSocket($context, $socketType);
     }
 
     /**

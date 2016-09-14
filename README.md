@@ -20,6 +20,14 @@ $dispatcher->dispatch($message);
 
 ````
 
+### Initialize dispatcher with custom ZMQSocket
+
+````php
+
+$dispatcher = new ZmqDispatcher(array('tcp://my.broker'), 'myapp', 'dev', ZmqDispatcher::createZmqSocket());
+
+````
+
 
 ### Filtered Request Informations
 

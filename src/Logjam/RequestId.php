@@ -21,7 +21,7 @@ class RequestId implements RequestIdInterface
      */
     public function getId() 
     {
-        if($this->id === null) {
+        if ($this->id === null) {
             $this->id = md5(uniqid(gethostname(), true));
         }
         
