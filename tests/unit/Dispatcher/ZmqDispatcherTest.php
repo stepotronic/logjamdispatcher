@@ -72,6 +72,15 @@ class ZmqDispatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertGreaterThanOrEqual(1, $dispatcher->getExceptions());
     }
     
+    public function testZMQSocketFactory() {
+        $this->assertInstanceOf(ZMQSocket::class, ZmqDispatcher::createZmqSocket());
+    }
+    
+    public function testConstructorCreatesSocketInstanceWithoutExceptions()
+    {
+        new ZmqDispatcher(['tcp://willneverconnect'], 'testapp', 'testenv');
+    }
+    
     public function testConnectFails()
     {
         /**
@@ -110,6 +119,30 @@ class ZmqDispatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(false, $dispatcher->hasExceptions());
         $this->assertInternalType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $dispatcher->getExceptions());
     }
+
+
+    public function testDispatchFailesWithInvalidMEssage()
+    {
+        $exceptionName = \LogjamDispatcher\Exception\ValidationException::class;
+        $this->setExpectedException($exceptionName);
+        /**
+         * @var ZmqDispatcher $dispatcher
+         * @var PHPUnit_Framework_MockObject_MockObject $zmqSocketMock
+         */
+        list($dispatcher, $zmqSocketMock) = $this->getDispatcherInstance();
+        $message = clone  $this->message;
+        $message->setAction(123);
+        $dispatcher->dispatch($message);
+        
+        if(!$dispatcher->hasExceptions()) {
+            $this->fail(sprintf('Expected missformated message to cause an "%s" Exception.', $exceptionName));
+        } else {
+            foreach($dispatcher->getExceptions() as $e) {
+                throw $e;
+            }
+        }
+        
+    }
     
     public function testDispatchFailesToSendMulti()
     {
@@ -137,7 +170,7 @@ class ZmqDispatcherTest extends \PHPUnit_Framework_TestCase
          */
         $zmqSocketMock = $this->getZMQSocketMock();
         
-        $dispatcher = new ZmqDispatcher($zmqSocketMock, ['tcp://willneverconnect'], 'testapp', 'testenv');
+        $dispatcher = new ZmqDispatcher(['tcp://willneverconnect'], 'testapp', 'testenv', $zmqSocketMock);
 
         return [$dispatcher, $zmqSocketMock];
     }
