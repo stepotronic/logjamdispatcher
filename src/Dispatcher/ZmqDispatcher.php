@@ -125,6 +125,8 @@ class ZmqDispatcher implements DispatcherInterface
      * @param  int $socketType
      * 
      * @return ZMQSocket
+     * 
+     * @throws ZMQSocketException
      */
     public static function createZmqSocket(ZMQContext $context = null, $socketType = ZMQ::SOCKET_PUSH)
     {
