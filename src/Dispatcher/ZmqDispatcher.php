@@ -50,14 +50,15 @@ class ZmqDispatcher implements DispatcherInterface
 
     /**
      * ZmqDispatcher constructor.
-     * @param ZMQSocket $socket
+     * 
      * @param array $brokers ZeroMQ Broker addresses (tcp://host:port).
-     * @param $application
+     * @param string $application
      * @param string $environment String that identifies the environment the app is in.
+     * @param ZMQSocket $socket
      */
     public function __construct(array $brokers, $application, $environment, ZMQSocket $socket = null)
     {
-        if ($socket === null) {
+        if (null === $socket) {
             $socket = self::createZmqSocket();
         }
         
@@ -77,37 +78,13 @@ class ZmqDispatcher implements DispatcherInterface
     public function dispatch(MessageInterface $message)
     {
         $this->exceptions = [];
-        
-        if ($this->isConnected === null) {
-            $this->connect();
+
+
+        if($this->connect()) {
+            return $this->sendMessage($message);
         }
-
-        try {
-            if (!$this->isConnected) {
-                throw new LogjamDispatcherException("Unable to connect to ZMQ.");
-            }
-            
-            MessageValidator::validate($message);
-
-            $this->queue->sendmulti([
-                    $this->application . '-' . $this->environment,
-                    'logs.' . $this->application . '.' . $this->environment,
-                    json_encode($message)
-            ]);
-            
-        } catch (ZMQException $exception) {
-            // Catch ZeroMQ Exceptions
-            $this->addDispatchException($exception);
-
-            return false;
-        } catch (LogjamDispatcherException $exception) {
-            // Catch self thrown Exceptions to avoid recursions
-            $this->addDispatchException($exception);
-
-            return false;
-        }
-        
-        return true;
+       
+       return false;
     }
     
     /**
@@ -115,20 +92,32 @@ class ZmqDispatcher implements DispatcherInterface
      */
     protected function connect()
     {
-        if(false === $this->isConnected) {
-            
+        if(null === $this->isConnected) {
             foreach($this->brokers as $broker) {
                 try {
                     $this->queue->connect($broker);
                     $this->isConnected = true;
+                    break;
                 } catch (ZMQSocketException $exception) {
                     // we cannot connect, make sure application does not exit
                     $this->addDispatchException($exception);
+                    $this->isConnected = false;
                 }
             }
         }
+        
+        return $this->isConnected();
     }
 
+    /**
+     * @return boolean
+     */
+    public function isConnected()
+    {
+        return $this->isConnected;
+    }
+
+    
     /**
      * Factory method for a ZMQSocket
      * 
@@ -168,5 +157,38 @@ class ZmqDispatcher implements DispatcherInterface
     public function getExceptions()
     {
         return $this->exceptions;
+    }
+
+    /**
+     * Sends message if it's valid. Return false on failure
+     * 
+     * @param MessageInterface $message
+     * 
+     * @return bool
+     */
+    protected function sendMessage(MessageInterface $message)
+    {
+        try {
+            MessageValidator::validate($message);
+            
+            $this->queue->sendmulti([
+                $this->application . '-' . $this->environment,
+                'logs.' . $this->application . '.' . $this->environment,
+                json_encode($message)
+            ]);
+
+            $sent = true;
+        } catch (ZMQSocketException $exception) {
+            // we cannot connect, make sure application does not exit
+            $this->addDispatchException($exception);
+
+            $sent = false;
+        } catch (LogjamDispatcherException $e) {
+            $this->addDispatchException($e);
+
+            $sent = false;
+        }
+
+        return $sent;
     }
 }
