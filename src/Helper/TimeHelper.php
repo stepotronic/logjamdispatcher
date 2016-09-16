@@ -11,7 +11,7 @@ class TimeHelper
      */
     public static function convertDateTimeToMicrotime(\DateTime $dateTime)
     {
-        $microtime = $dateTime->getTimestamp() * 1000;
+        $microtime = $dateTime->getTimestamp() * 1000000;
         $microtime += (int)substr($dateTime->format('u'), -6);
 
         return $microtime;
