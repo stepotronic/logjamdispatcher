@@ -1,151 +1,105 @@
 <?php
 
-namespace LogjamDispatcher;
+namespace LogjamDispatcher\Logjam;
+
+use LogjamDispatcher\Helper\TimeHelper;
+use LogjamDispatcher\Dispatcher\Expression;
+use LogjamDispatcher\Http\RequestInformationInterface;
 
 /**
  * Message for required data for logjam.
  */
-class Message
+class Message implements MessageInterface
 {
     /**
-     * @var int
+     * @var string
      */
-    const SEVERITY_DEBUG = 0;
-
+    protected $action;
+    
     /**
-     * @var int
+     * @var \DateTime
      */
-    const SEVERITY_INFO = 1;
-
+    protected $requestStartedAt;
+    
     /**
-     * @var int
+     * @var \DateTime
      */
-    const SEVERITY_WARN = 2;
-
-    /**
-     * @var int
-     */
-    const SEVERITY_ERROR = 3;
-
-    /**
-     * @var int
-     */
-    const SEVERITY_FATAL = 4;
+    protected $requestEndedAt;
     
     /**
      * @var int
      */
-    const SEVERITY_UNKOWN = 5;
-
+    protected $responseCode;
+    
+    /**
+     * @var int
+     */
+    protected $severity = Expression\Severity::UNKOWN;
+    
     /**
      * @var string
      */
-    protected $action = 0;
+    protected $callerId;
+    
+    /**
+     * @var string
+     */
+    protected $callerAction;
     
     /**
      * @var int
      */
-    protected $requestStartedTimestamp = 0;
+    protected $userId;
     
     /**
-     * @var int
+     * @var string
      */
-    protected $requestStartedTimestampInMilliseconds = 0;
+    protected $host;
+    
+    /**
+     * @var string
+     */
+    protected $ip;
+    
+    /**
+     * @var RequestIdInterface
+     */
+    protected $requestId;
+    
+    /**
+     * @var array
+     */
+    protected $url = [];
+    
+    /**
+     * @var array
+     */
+    protected $exceptions = [];
+    
+    /**
+     * @var array
+     */
+    protected $additionalData = [];
     
     /**
      * @var float
      */
-    protected $totalTime = 0.0;
-    
-    /**
-     * @var string
-     */
-    protected $responseCode = '';
-    
-    /**
-     * @var int
-     */
-    protected $severity = self::SEVERITY_UNKOWN;
-    
-    /**
-     * @var string
-     */
-    protected $callerId = '';
-    
-    /**
-     * @var string
-     */
-    protected $callerAction = '';
-    
-    /**
-     * @var int
-     */
-    protected $userId = 0;
-    
-    /**
-     * @var string
-     */
-    protected $host = '';
-    
-    /**
-     * @var string
-     */
-    protected $ip = '';
-    
-    /**
-     * @var string
-     */
-    protected $requestId = '';
-    
-    /**
-     * @var array
-     */
-    protected $queryParameters = array();
-    
-    /**
-     * @var array
-     */
-    protected $headers = array();
-    
-    /**
-     * @var array
-     */
-    protected $url = array();
-    
-    /**
-     * @var string
-     */
-    protected $method = '';
-    
-    /**
-     * @var
-     */
-    protected $bodyParameters;
-    
-    /**
-     * @var array
-     */
-    protected $exceptions = array();
-    
-    /**
-     * @var array
-     */
-    protected $additionalData = array();
-    
-    /**
-     * @var float
-     */
-    protected $dbTime = null;
+    protected $dbTime;
 
     /**
      * @var int
      */
-    protected $dbCalls = null;
+    protected $dbCalls;
 
     /**
-     * @var array
+     * @var LineInterface[]
      */
     protected $lines = [];
+
+    /**
+     * @var RequestInformationInterface
+     */
+    protected $requestInformation;
     
     /**
      * @return string
@@ -157,6 +111,7 @@ class Message
     
     /**
      * @param string $action
+     * 
      * @return $this
      */
     public function setAction($action)
@@ -166,61 +121,54 @@ class Message
     }    
     
     /**
-     * @return int
+     * @return \DateTime
      */
-    public function getRequestStartedTimestamp()
+    public function getRequestStartedAt()
     {
-        return $this->requestStartedTimestamp;
+        return $this->requestStartedAt;
     }
     
     /**
-     * @param int $requestStartedTimestamp
+     * @param \DateTime $requestStartedAt
+     * 
      * @return $this
      */
-    public function setRequestStartedTimestamp($requestStartedTimestamp)
+    public function setRequestStartedAt(\DateTime $requestStartedAt)
     {
-        $this->requestStartedTimestamp = $requestStartedTimestamp;
+        $this->requestStartedAt = $requestStartedAt;
+        
         return $this;
     }
-    
+
     /**
-     * @return int
+     * @return \DateTime
      */
-    public function getRequestStartedTimestampInMilliseconds()
+    public function getRequestEndedAt()
     {
-        return $this->requestStartedTimestampInMilliseconds;
+        return $this->requestEndedAt;
     }
     
     /**
-     * @param int $requestStartedTimestampInMilliseconds
+     * @param \DateTime $requestEndedAt
+     * 
      * @return $this
      */
-    public function setRequestStartedTimestampInMilliseconds($requestStartedTimestampInMilliseconds)
+    public function setRequestEndedAt(\DateTime $requestEndedAt)
     {
-        $this->requestStartedTimestampInMilliseconds = $requestStartedTimestampInMilliseconds;
+        $this->requestEndedAt = $requestEndedAt;
         return $this;
     }
-    
+
     /**
-     * @return float
+     * @return int
      */
     public function getTotalTime()
     {
-        return $this->totalTime;
+        return TimeHelper::convertDateTimeToMicrotime($this->getRequestEndedAt()) - TimeHelper::convertDateTimeToMicrotime($this->getRequestStartedAt());
     }
     
     /**
-     * @param float $totalTime
-     * @return $this
-     */
-    public function setTotalTime($totalTime)
-    {
-        $this->totalTime = $totalTime;
-        return $this;
-    }
-    
-    /**
-     * @return string
+     * @return int
      */
     public function getResponseCode()
     {
@@ -229,6 +177,7 @@ class Message
     
     /**
      * @param string $responseCode
+     * 
      * @return $this
      */
     public function setResponseCode($responseCode)
@@ -247,6 +196,7 @@ class Message
     
     /**
      * @param int $severity
+     * 
      * @return $this
      */
     public function setSeverity($severity)
@@ -265,6 +215,7 @@ class Message
     
     /**
      * @param string $callerId
+     * 
      * @return $this
      */
     public function setCallerId($callerId)
@@ -283,6 +234,7 @@ class Message
     
     /**
      * @param string $callerAction
+     * 
      * @return $this
      */
     public function setCallerAction($callerAction)
@@ -301,6 +253,7 @@ class Message
     
     /**
      * @param int $userId
+     * 
      * @return $this
      */
     public function setUserId($userId)
@@ -319,6 +272,7 @@ class Message
     
     /**
      * @param string $host
+     * 
      * @return $this
      */
     public function setHost($host)
@@ -337,6 +291,7 @@ class Message
     
     /**
      * @param string $ip
+     * 
      * @return $this
      */
     public function setIp($ip)
@@ -346,7 +301,7 @@ class Message
     }
     
     /**
-     * @return string
+     * @return RequestIdInterface
      */
     public function getRequestId()
     {
@@ -354,51 +309,16 @@ class Message
     }
     
     /**
-     * @param string $requestId
+     * @param RequestIdInterface $requestId
+     * 
      * @return $this
      */
-    public function setRequestId($requestId)
+    public function setRequestId(RequestIdInterface $requestId)
     {
         $this->requestId = $requestId;
         return $this;
     }
-    
-    /**
-     * @return array
-     */
-    public function getQueryParameters()
-    {
-        return $this->queryParameters;
-    }
-    
-    /**
-     * @param array $queryParameters
-     * @return $this
-     */
-    public function setQueryParameters($queryParameters)
-    {
-        $this->queryParameters = $queryParameters;
-        return $this;
-    }
-    
-    /**
-     * @return array
-     */
-    public function getHeaders()
-    {
-        return $this->headers;
-    }
-    
-    /**
-     * @param array $headers
-     * @return $this
-     */
-    public function setHeaders($headers)
-    {
-        $this->headers = $headers;
-        return $this;
-    }
-    
+
     /**
      * @return array
      */
@@ -409,6 +329,7 @@ class Message
     
     /**
      * @param array $url
+     * 
      * @return $this
      */
     public function setUrl($url)
@@ -416,45 +337,9 @@ class Message
         $this->url = $url;
         return $this;
     }
-    
+
     /**
-     * @return string
-     */
-    public function getMethod()
-    {
-        return $this->method;
-    }
-    
-    /**
-     * @param string $method
-     * @return $this
-     */
-    public function setMethod($method)
-    {
-        $this->method = $method;
-        return $this;
-    }
-    
-    /**
-     * @return mixed
-     */
-    public function getBodyParameters()
-    {
-        return $this->bodyParameters;
-    }
-    
-    /**
-     * @param mixed $bodyParameters
-     * @return $this
-     */
-    public function setBodyParameters($bodyParameters)
-    {
-        $this->bodyParameters = $bodyParameters;
-        return $this;
-    }
-    
-    /**
-     * @return array
+     * @return \Exception[]
      */
     public function getExceptions()
     {
@@ -462,7 +347,8 @@ class Message
     }
     
     /**
-     * @param array $exceptions
+     * @param  \Exception[] $exceptions
+     * 
      * @return $this
      */
     public function setExceptions($exceptions)
@@ -481,6 +367,7 @@ class Message
     
     /**
      * @param array $additionalData
+     * 
      * @return $this
      */
     public function setAdditionalData($additionalData)
@@ -491,6 +378,7 @@ class Message
 
     /**
      * @param float $dbTime
+     * 
      * @return $this
      */
     public function setDbTime($dbTime)
@@ -508,7 +396,8 @@ class Message
     }
 
     /**
-     * @param int $dbTime
+     * @param  int $dbCalls
+     * 
      * @return $this
      */
     public function setDbCalls($dbCalls)
@@ -527,30 +416,104 @@ class Message
 
     /**
      * Adds a log line
-     * @param int $severity
-     * @param string $timestamp
-     * @param string $info
+     * @param LineInterface $line
+     * 
      * @return $this
      */
-    public function addLine($severity, $timestamp, $info)
+    public function addLine(LineInterface $line)
     {
-        $this->lines[] = [$severity, $timestamp, $info];
-
-        if ($this->getSeverity() == self::SEVERITY_UNKOWN) {
-            $this->setSeverity($severity);
-        } else {
-            $this->setSeverity(max($severity, $this->getSeverity()));
-        }
-
+        $this->lines[] = $line;
+        
         return $this;
     }
 
     /**
      * Returns the log lines
-     * @return array
+     * 
+     * @return LineInterface[]
      */
     public function getLines()
     {
         return $this->lines;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasLines()
+    {
+        return count($this->lines) > 0;
+    }
+
+    /**
+     * @param $requestInformation
+     * 
+     * @return $this
+     */
+    public function setRequestInformation($requestInformation)
+    {
+        $this->requestInformation = $requestInformation;
+        
+        return $this;
+    }
+    
+    
+    /**
+     * @return RequestInformationInterface
+     */
+    public function getHttpRequestInformation()
+    {
+        return $this->requestInformation;
+    }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        $logArray =  [
+            // required
+            'action'        => $this->getAction(),
+            'started_at'    => $this->getRequestStartedAt()->format('c'), // ISO 8601
+            'started_ms'    => TimeHelper::convertDateTimeToMillitime($this->getRequestStartedAt()),
+            'total_time'    => $this->getTotalTime(),
+            'code'          => $this->getResponseCode(),
+            'severity'      => $this->getSeverity(),
+            'caller_id'     => $this->getCallerId(),
+            'caller_action' => $this->getCallerAction(),
+            'user_id'       => $this->getUserId(),
+            'host'          => $this->getHost(),
+            'ip'            => $this->getIp(),
+            'request_info'   => [
+                'query_parameters' => $this->getHttpRequestInformation()->getQueryParameters(),
+                'headers'          => $this->getHttpRequestInformation()->getHeaders(),
+                'url'               => $this->getHttpRequestInformation()->getUrl(),
+                'method'           => $this->getHttpRequestInformation()->getMethod(),
+                'body_parameters'  => $this->getHttpRequestInformation()->getBodyParameters(),
+            ],
+            'exceptions'     => $this->getExceptions(),
+            'message'        => $this->getAdditionalData(),
+            'request_id'     => $this->getRequestId()->getId(),
+        ];
+
+
+        // Optional parameters
+        if ($this->getDbCalls() !== null) {
+            $logArray['db_calls'] = $this->getDbCalls();
+        }
+
+        if ($this->getDbTime() !== null) {
+            $logArray['db_time'] = $this->getDbTime();
+        }
+
+        if ($this->hasLines()) {
+            $logArray['lines'] = [];
+            
+            foreach ($this->getLines() as $line) {
+                $logArray['lines'][] = [$line->getSeverity(), TimeHelper::convertDateTimeToMicrotime($line->getMicroTime()), $line->getMessage()];
+            }
+        }
+        
+        return $logArray;
     }
 }

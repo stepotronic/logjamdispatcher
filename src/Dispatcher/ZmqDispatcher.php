@@ -2,10 +2,15 @@
 
 namespace LogjamDispatcher\Dispatcher;
 
-use LogjamDispatcher\Message;
+use LogjamDispatcher\Logjam\MessageInterface;
+use LogjamDispatcher\Validator\MessageValidator;
+
+use LogjamDispatcher\Exception\LogjamDispatcherException;
+
 use ZMQ;
-use ZMQContext;
 use ZMQSocket;
+use ZMQContext;
+use ZMQException;
 use ZMQSocketException;
 
 /**
@@ -16,7 +21,7 @@ class ZmqDispatcher implements DispatcherInterface
     /**
      * @var array
      */
-    protected $brokers = array();
+    protected $brokers = [];
     
     /**
      * @var ZMQSocket
@@ -26,181 +31,166 @@ class ZmqDispatcher implements DispatcherInterface
     /**
      * @var string
      */
-    protected $application;    
+    protected $application;
     
     /**
      * @var string
      */
     protected $environment;
-    
-    /**
-     * @var array
-     */
-    protected $fieldsToFilter;
-    
-    /**
-     * Indexes to be filtered from requests are replaced with this string.
-     * @var string
-     */
-    protected $filterMask;
-    
+
     /**
      * @var boolean
      */
     protected $isConnected;
 
     /**
-     * ZmqDispatcher constructor.
-     * @param array $brokers ZeroMQ Broker addresses (tcp://host:port).
-     * @param $application
-     * @param string $environment String that identifies the environment the app is in.
-     * @param array $fieldsToFilter Array of identifiers in post or get data that should be filtered from the log data.
-     * @param string $filterMask String to replace the filtered data with.
+     * @var array
      */
-    public function __construct(array $brokers, $application, $environment, array $fieldsToFilter = array(), $filterMask = '*****')
+    protected $exceptions = [];
+
+    /**
+     * ZmqDispatcher constructor.
+     * 
+     * @param array $brokers ZeroMQ Broker addresses (tcp://host:port).
+     * @param string $application
+     * @param string $environment String that identifies the environment the app is in.
+     * @param ZMQSocket $socket
+     */
+    public function __construct(array $brokers, $application, $environment, ZMQSocket $socket = null)
     {
+        if (null === $socket) {
+            $socket = self::createZmqSocket();
+        }
+        
+        $this->queue = $socket;
         $this->brokers = $brokers;
         $this->environment = $environment;
-        $this->fieldsToFilter = $fieldsToFilter;
-        $this->filterMask = $filterMask;
         $this->application = $application;
     }
     
+
     /**
      * Dispatches the message
-     * @param Message $message
+     * @param MessageInterface $message
+     * 
+     * @return boolean
      */
-    public function dispatch(Message $message)
+    public function dispatch(MessageInterface $message)
     {
-        if ($this->isConnected === null) {
-            $this->connect();
+        $this->exceptions = [];
+
+
+        if($this->connect()) {
+            return $this->sendMessage($message);
         }
-        if ($this->isConnected) {
-            $logString = $this->messageToArray($message);
-            try {
-                $this->queue
-                    ->sendmulti(
-                        array(
-                            $this->application . '-' . $this->environment,
-                            'logs.' . $this->application . '.' . $this->environment,
-                            $logString
-                        )
-                    );
-            } catch (ZMQSocketException $exception) {
-                // @todo log to file
-            }
-        }
+       
+       return false;
     }
-    
-    /**
-     * Returns message data as json.
-     *
-     * @param Message $message
-     * @return array
-     */
-    protected function messageToArray(Message $message)
-    {
-        $logArray =  array(
-            // required
-            'action'        => $message->getAction(),
-            'started_at'    => date('c', $message->getRequestStartedTimestamp()), // ISO 8601
-            'started_ms'    => $message->getRequestStartedTimestampInMilliseconds(),
-            'total_time'    => round($message->getTotalTime(), 5),
-            'code'          => $message->getResponseCode(),
-            'severity'      => $message->getSeverity(),
-            'caller_id'     => $message->getCallerId(),
-            'caller_action' => $message->getCallerAction(),
-            'user_id'       => $message->getUserId(),
-            'host'          => $message->getHost(),
-            'ip'            => $message->getIp(),
-            'request_info'   => array(
-                'query_parameters' => $this->filterPrivateFields($message->getQueryParameters()),
-                'headers'          => $message->getHeaders(),
-                'url'               => $message->getUrl(),
-                'method'           => $message->getMethod(),
-                'body_parameters'  => $this->filterPrivateFields($message->getBodyParameters()),
-            ),
-            'exceptions'     => $message->getExceptions(),
-            'message'         => $message->getAdditionalData()
-        );
-
-        if ($message->getRequestId() == null) {
-            $requestId = $message->getRequestId();
-        } else {
-            // logjam expects a 32 character string,
-            // also to avoid time-based conflicts on multi server setups we add the hostname
-            $requestId = md5(uniqid(gethostname(), true));
-        }
-        $logArray['request_id'] = $requestId;
-
-        
-        if ($message->getDbCalls() !== null) {
-            $logArray['db_calls'] = $message->getDbCalls();
-        }
-
-        if ($message->getDbTime() !== null) {
-            $logArray['db_time'] = $message->getDbTime();
-        }
-
-        if (count($message->getLines()) > 0) {
-            $logArray['lines'] = $message->getLines();
-        }
-
-        return json_encode($logArray);
-    }    
     
     /**
      * Connect to the zeromq channel.‚
      */
     protected function connect()
     {
-        if ($this->setupSocket()) {
+        if(null === $this->isConnected) {
             foreach($this->brokers as $broker) {
                 try {
                     $this->queue->connect($broker);
                     $this->isConnected = true;
+                    break;
                 } catch (ZMQSocketException $exception) {
                     // we cannot connect, make sure application does not exit
-                    // @todo log this into a file
+                    $this->addDispatchException($exception);
+                    $this->isConnected = false;
                 }
             }
-        } else {
-            $this->isConnected = false;
         }
+        
+        return $this->isConnected();
     }
+
+    /**
+     * @return boolean
+     */
+    public function isConnected()
+    {
+        return $this->isConnected;
+    }
+
     
     /**
-     * Tries to setup a ZeroMQ-Socket.
+     * Factory method for a ZMQSocket
+     * 
+     * @param  ZMQContext|null $context
+     * @param  int $socketType
+     * 
+     * @return ZMQSocket
+     * 
+     * @throws ZMQSocketException
+     */
+    public static function createZmqSocket(ZMQContext $context = null, $socketType = ZMQ::SOCKET_PUSH)
+    {
+        if ($context === null) {
+            $context = new ZMQContext();
+        }
+        
+        return new ZMQSocket($context, $socketType);
+    }
+
+    /**
+     * @param \Exception $exception
+     */
+    protected function addDispatchException(\Exception $exception)
+    {
+        $this->exceptions[] = $exception;
+    }
+
+    /**
      * @return bool
      */
-    protected function setupSocket()
+    public function hasExceptions()
     {
-        $successful = false;
-        try {
-            $this->queue = new ZMQSocket(new ZMQContext(), ZMQ::SOCKET_PUSH);
-            $successful = true;
-        } catch(ZMQSocketException $exception) {
-            // @todo log this into a file
-        }
-        
-        return $successful;
+        return count($this->exceptions) > 0;
     }
-    
+
     /**
-     * Filter private fields that should not be shown in logs.
-     *
-     * @param array $unfilteredFields
-     * @return array
+     * @return \Exception[]
      */
-    protected function filterPrivateFields(array $unfilteredFields)
+    public function getExceptions()
     {
-        foreach($this->fieldsToFilter as $fieldToFilter) {
-            if (array_key_exists($fieldToFilter, $unfilteredFields)) {
-                $unfilteredFields[$fieldToFilter] = $this->filterMask;
-            }
+        return $this->exceptions;
+    }
+
+    /**
+     * Sends message if it's valid. Return false on failure
+     * 
+     * @param MessageInterface $message
+     * 
+     * @return bool
+     */
+    protected function sendMessage(MessageInterface $message)
+    {
+        try {
+            MessageValidator::validate($message);
+            
+            $this->queue->sendmulti([
+                $this->application . '-' . $this->environment,
+                'logs.' . $this->application . '.' . $this->environment,
+                json_encode($message)
+            ]);
+
+            $sent = true;
+        } catch (ZMQSocketException $exception) {
+            // we cannot connect, make sure application does not exit
+            $this->addDispatchException($exception);
+
+            $sent = false;
+        } catch (LogjamDispatcherException $e) {
+            $this->addDispatchException($e);
+
+            $sent = false;
         }
-        
-        return $unfilteredFields;
-    }    
-    
+
+        return $sent;
+    }
 }
