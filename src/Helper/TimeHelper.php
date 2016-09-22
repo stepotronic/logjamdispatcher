@@ -11,10 +11,10 @@ class TimeHelper
      */
     public static function convertDateTimeToMicrotime(\DateTime $dateTime)
     {
-        $microtime = $dateTime->getTimestamp() * 1000000;
+        $microtime = (float)$dateTime->getTimestamp() * 1000000;
         $microtime += (int)substr($dateTime->format('u'), -6);
 
-        return $microtime;
+        return $microtime / 1000;
     }
 
     /**
@@ -24,7 +24,7 @@ class TimeHelper
      */
     public static function convertDateTimeToMillitime(\DateTime $dateTime)
     {
-        $millitime = $dateTime->getTimestamp() * 1000;
+        $millitime = (float)$dateTime->getTimestamp() * 1000;
         $millitime += (int)substr($dateTime->format('u'), -6, 3);
 
         return $millitime;
