@@ -138,7 +138,7 @@ class Message implements MessageInterface
      */
     public function setRequestStartedAt(\DateTime $timestamp = null)
     {
-        $this->requestStartedAt = $timestamp ? $timestamp : $this->getMicrotime();
+        $this->requestStartedAt = $timestamp ? $timestamp : TimeHelper::getMicrotime();
 
         return $this;
     }
@@ -158,7 +158,7 @@ class Message implements MessageInterface
      */
     public function setRequestEndedAt(\DateTime $timestamp = null)
     {
-        $this->requestEndedAt = $timestamp ? $timestamp : $this->getMicrotime();
+        $this->requestEndedAt = $timestamp ? $timestamp : TimeHelper::getMicrotime();
         return $this;
     }
 
@@ -209,7 +209,7 @@ class Message implements MessageInterface
     }
 
     /**
-     * @inheritdoc
+     * @return void
      */
     public function setSeverityToMax()
     {
@@ -534,14 +534,6 @@ class Message implements MessageInterface
         }
         
         return $logArray;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    protected function getMicrotime()
-    {
-        return \DateTime::createFromFormat('U.u', microtime(true));
     }
 
     /**

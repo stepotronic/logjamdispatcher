@@ -29,4 +29,13 @@ class TimeHelper
 
         return $millitime;
     }
+
+    /**
+     * @return \DateTime
+     */
+    public static function getMicrotime()
+    {
+        return \DateTime::createFromFormat('U.u', microtime(true));
+    }
+
 }
