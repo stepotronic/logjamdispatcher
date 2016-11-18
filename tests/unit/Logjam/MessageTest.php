@@ -5,6 +5,7 @@ use LogjamDispatcher\Logjam\RequestId;
 use LogjamDispatcher\Http\RequestInformation;
 use LogjamDispatcher\Logjam\Line;
 use LogjamDispatcher\Dispatcher\Expression;
+use LogjamDispatcher\Dispatcher\Expression\Severity;
 
 /**
  * Class MessageTest
@@ -49,6 +50,16 @@ class MessageTest extends AbstractMessageTest
     }
 
     /**
+     * Tests RequestStartedAt getter/setter with default value
+     */
+    public function testRequestStartedAtWithDefaultValue()
+    {
+        $this->assertSame(null, $this->instance->getRequestStartedAt());
+        $this->instance->setRequestStartedAt();
+        $this->assertInstanceOf(DateTime::class, $this->instance->getRequestStartedAt());
+    }
+
+    /**
      * Tests RequestEndedAt getter/setter
      */
     public function testRequestEndedAt()
@@ -59,6 +70,16 @@ class MessageTest extends AbstractMessageTest
         $this->instance->setRequestEndedAt($testTimestamp);
         $this->assertInstanceOf(DateTime::class, $this->instance->getRequestEndedAt());
         $this->assertSame($testTimestamp, $this->instance->getRequestEndedAt());
+    }
+
+    /**
+     * Tests RequestEndedAt getter/setter with default value
+     */
+    public function testRequestEndedAtWithDefaultValue()
+    {
+        $this->assertSame(null, $this->instance->getRequestEndedAt());
+        $this->instance->setRequestEndedAt();
+        $this->assertInstanceOf(DateTime::class, $this->instance->getRequestEndedAt());
     }
 
     /**
@@ -274,4 +295,41 @@ class MessageTest extends AbstractMessageTest
 
         json_encode($this->instance);
     }
+
+    /**
+     * Test if we get the highest severity out of all lines.
+     */
+    public function testGetHighestSeverity()
+    {
+        $message = new Message();
+        $message->addLine(new Line(Severity::INFO));
+        $message->addLine(new Line(Severity::ERROR));
+        $message->setSeverityToMax();
+        $this->assertEquals(Severity::ERROR, $message->getSeverity(), "not correct high severity");
+    }
+
+    /**
+     * Test if we get the correct default (highest) severity.
+     */
+    public function testGetHighestSeverityInCaseOfUnknownSeverity()
+    {
+        $message = new Message();
+        $message->addLine(new Line(Severity::INFO));
+        $message->addLine(new Line());
+        $message->setSeverityToMax();
+        $this->assertEquals(Severity::FATAL, $message->getSeverity(), "not correct high severity for message line with unknown severity");
+    }
+
+    /**
+     * Test if we get the correct default (highest) severity
+     * when there are no lines for whatever reason.
+     */
+    public function testSeverityOfMessageWithoutLines()
+    {
+        $message = new Message();
+        $this->assertEquals(Severity::UNKOWN, $message->getSeverity(), "not correct severity");
+        $message->setSeverityToMax();
+        $this->assertEquals(Severity::FATAL, $message->getSeverity(), "high severity wasn't converted correctly");
+    }
+
 }

@@ -32,7 +32,7 @@ class Line implements LineInterface
     {
         $this->severity = $severity;
         $this->message = $message;
-        $this->microTime = $microTime;
+        $this->microTime = $microTime ? $microTime : $this->createMicroTime();
     }
 
     /**
@@ -58,4 +58,13 @@ class Line implements LineInterface
     {
         return $this->microTime;
     }
+
+    /**
+     * @return \DateTime
+     */
+    protected function createMicroTime()
+    {
+        return \DateTime::createFromFormat('U.u', microtime(true));
+    }
+
 }
