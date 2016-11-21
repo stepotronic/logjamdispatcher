@@ -75,7 +75,7 @@ class Message implements MessageInterface
     protected $url = [];
     
     /**
-     * @var array
+     * @var \Exception[]
      */
     protected $exceptions = [];
     
@@ -371,9 +371,9 @@ class Message implements MessageInterface
     /**
      * @param \Exception $exception
      */
-    public function addException($exception)
+    public function addException(\Exception $exception)
     {
-        $this->exceptions[] = get_class($exception);
+        $this->exceptions[] = $exception;
     }
     
     /**
