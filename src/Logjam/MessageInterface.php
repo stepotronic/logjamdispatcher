@@ -90,7 +90,7 @@ interface MessageInterface extends \JsonSerializable
     /**
      * @param \Exception $exception
      */
-    public function addException($exception);
+    public function addException(\Exception $exception);
 
     /**
      * @return array

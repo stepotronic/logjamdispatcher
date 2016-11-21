@@ -211,6 +211,12 @@ class MessageTest extends AbstractMessageTest
         $this->instance->setExceptions($testExceptions);
         $this->assertInternalType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $this->instance->getExceptions());
         $this->assertSame($testExceptions, $this->instance->getExceptions());
+    
+        $anotherException = new \Exception('2');
+        $this->instance->addException($anotherException);
+        $testExceptions[] = $anotherException;
+        $this->assertInternalType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, $this->instance->getExceptions());
+        $this->assertSame($testExceptions, $this->instance->getExceptions());
     }
 
     public function testAdditionalData()
