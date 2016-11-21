@@ -4,6 +4,7 @@ namespace LogjamDispatcher\Logjam;
 
 use Cvmaker\Xing\User\Date;
 use LogjamDispatcher\Dispatcher\Expression;
+use LogjamDispatcher\Helper\TimeHelper;
 
 class Line implements LineInterface
 {
@@ -32,7 +33,7 @@ class Line implements LineInterface
     {
         $this->severity = $severity;
         $this->message = $message;
-        $this->microTime = $microTime;
+        $this->microTime = $microTime ? $microTime : TimeHelper::getMicrotime();
     }
 
     /**
@@ -58,4 +59,5 @@ class Line implements LineInterface
     {
         return $this->microTime;
     }
+
 }

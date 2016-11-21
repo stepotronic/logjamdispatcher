@@ -5,6 +5,9 @@ namespace LogjamDispatcher\Logjam;
 use LogjamDispatcher\Helper\TimeHelper;
 use LogjamDispatcher\Dispatcher\Expression;
 use LogjamDispatcher\Http\RequestInformationInterface;
+use LogjamDispatcher\Logjam\LineInterface;
+use LogjamDispatcher\Logjam\Line;
+use LogjamDispatcher\Dispatcher\Expression\Severity;
 
 /**
  * Message for required data for logjam.
@@ -127,16 +130,16 @@ class Message implements MessageInterface
     {
         return $this->requestStartedAt;
     }
-    
+
     /**
-     * @param \DateTime $requestStartedAt
-     * 
+     * @param \DateTime|null $timestamp
+     *
      * @return $this
      */
-    public function setRequestStartedAt(\DateTime $requestStartedAt)
+    public function setRequestStartedAt(\DateTime $timestamp = null)
     {
-        $this->requestStartedAt = $requestStartedAt;
-        
+        $this->requestStartedAt = $timestamp ? $timestamp : TimeHelper::getMicrotime();
+
         return $this;
     }
 
@@ -147,15 +150,15 @@ class Message implements MessageInterface
     {
         return $this->requestEndedAt;
     }
-    
+
     /**
-     * @param \DateTime $requestEndedAt
-     * 
+     * @param \DateTime|null $timestamp
+     *
      * @return $this
      */
-    public function setRequestEndedAt(\DateTime $requestEndedAt)
+    public function setRequestEndedAt(\DateTime $timestamp = null)
     {
-        $this->requestEndedAt = $requestEndedAt;
+        $this->requestEndedAt = $timestamp ? $timestamp : TimeHelper::getMicrotime();
         return $this;
     }
 
@@ -204,7 +207,15 @@ class Message implements MessageInterface
         $this->severity = $severity;
         return $this;
     }
-    
+
+    /**
+     * @return void
+     */
+    public function setSeverityToMax()
+    {
+        $this->severity = $this->getHighestSeverity();
+    }
+
     /**
      * @return string
      */
@@ -355,6 +366,14 @@ class Message implements MessageInterface
     {
         $this->exceptions = $exceptions;
         return $this;
+    }
+
+    /**
+     * @param \Exception $exception
+     */
+    public function addException($exception)
+    {
+        $this->exceptions[] = get_class($exception);
     }
     
     /**
@@ -516,4 +535,32 @@ class Message implements MessageInterface
         
         return $logArray;
     }
+
+    /**
+     * Returns the highest severity that occurs among the log lines.
+     *
+     * @return int
+     */
+    protected function getHighestSeverity()
+    {
+        $lines = $this->getLines();
+
+        if (empty($lines)) {
+            $maxSeverity = $this->getSeverity();
+
+        } else {
+            $severities = array_map(function(LineInterface $line) {
+                return $line->getSeverity();
+            }, $lines);
+            $maxSeverity = max($severities);
+        }
+
+        // replaces UNKNOWN with FATAL so that Logjam won't ignore it
+        if ($maxSeverity >= Severity::UNKOWN) {
+            $maxSeverity = Severity::FATAL;
+        }
+
+        return $maxSeverity;
+    }
+
 }

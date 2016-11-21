@@ -12,16 +12,30 @@ interface MessageInterface extends \JsonSerializable
      * @return string
      */
     public function getAction();
-    
+
     /**
      * @return \DateTime
      */
     public function getRequestStartedAt();
 
     /**
+     * @param \DateTime|null $timestamp
+     *
+     * @return MessageInterface
+     */
+    public function setRequestStartedAt(\DateTime $timestamp = null);
+
+    /**
      * @return \DateTime
      */
     public function getRequestEndedAt();
+
+    /**
+     * @param \DateTime|null $timestamp
+     *
+     * @return MessageInterface
+     */
+    public function setRequestEndedAt(\DateTime $timestamp = null);
 
     /**
      * @return int
@@ -37,6 +51,11 @@ interface MessageInterface extends \JsonSerializable
      * @return int
      */
     public function getSeverity();
+
+    /**
+     * Sets the current severity to the highest severity amoung the lines.
+     */
+    public function setSeverityToMax();
 
     /**
      * @return string
@@ -67,6 +86,11 @@ interface MessageInterface extends \JsonSerializable
      * @return \Exception[]
      */
     public function getExceptions();
+
+    /**
+     * @param \Exception $exception
+     */
+    public function addException($exception);
 
     /**
      * @return array

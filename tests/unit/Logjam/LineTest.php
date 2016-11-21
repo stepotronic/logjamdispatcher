@@ -40,4 +40,14 @@ class LineTest extends AbstractLineTest
     {
         $this->assertSame($this->microtime, $this->instance->getMicroTime());
     }
+
+    /**
+     * test microtimestammp getter with default value
+     */
+    public function testGetMicroTimeWithDefaultValue()
+    {
+        $line = new Line(Expression\Severity::DEBUG, 'foobar');
+        $this->assertInstanceOf(DateTime::class, $line->getMicroTime());
+    }
+
 }
