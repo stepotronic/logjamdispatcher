@@ -35,7 +35,9 @@ class TimeHelper
      */
     public static function getMicrotime()
     {
-        return \DateTime::createFromFormat('U.u', microtime(true));
+        $microtime = microtime(true);
+        // to ensure we have digits after the decimal point we need to use number_format otherwise false would be returned
+        return \DateTime::createFromFormat('U.u', number_format($microtime, 4, '.', ''));
     }
 
 }
