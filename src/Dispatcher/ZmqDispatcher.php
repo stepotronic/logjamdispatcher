@@ -165,10 +165,11 @@ class ZmqDispatcher implements DispatcherInterface
      * Sends message if it's valid. Return false on failure
      * 
      * @param MessageInterface $message
+     * @param string           $tag
      * 
      * @return bool
      */
-    protected function sendMessage(MessageInterface $message)
+    protected function sendMessage(MessageInterface $message, $tag = '')
     {
         try {
             MessageValidator::validate($message);
@@ -176,7 +177,8 @@ class ZmqDispatcher implements DispatcherInterface
             $this->queue->sendmulti([
                 $this->application . '-' . $this->environment,
                 'logs.' . $this->application . '.' . $this->environment,
-                json_encode($message)
+                json_encode($message),
+                $tag
             ]);
 
             $sent = true;
