@@ -29,15 +29,31 @@ class TimeHelper
 
         return $millitime;
     }
-
+    
     /**
+     * @deprecated with getMicrotimeDateTime
      * @return \DateTime
      */
     public static function getMicrotime()
     {
-        $microtime = microtime(true);
-        // to ensure we have digits after the decimal point we need to use number_format otherwise false would be returned
-        return \DateTime::createFromFormat('U.u', number_format($microtime, 4, '.', ''));
+        return self::getMicrotimeDateTime();
     }
+    
+    /**
+     * Returns a DateTime Object with a microtime precision.
+     *
+     * @param float $microtime
+     *
+     * @return bool|\DateTime
+     */
+    public static function getMicrotimeDateTime($microtime = null)
+    {
+        if (!is_float($microtime)) {
+            $microtime = microtime(true);
+        }
+        // to ensure we have digits after the decimal point we need to use number_format otherwise false would be returned
+   
+        return \DateTime::createFromFormat('U.u', number_format($microtime, 4, '.', ''));
+    }    
 
 }
